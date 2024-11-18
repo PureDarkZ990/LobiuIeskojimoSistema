@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Lobiu paieskos sistema</string>
+    <string name="login">Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log In</string>
+    <string name="register_here">Register</string>
+    <string name="confirmation">Are you sure you want to logout?</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="deletion_confirmation_text">Are you sure you want to delete your account?</string>
+    <string name="bio_text">Adventurer at heart, always on the lookout for the next hidden treasure! Whether it’s a mountain hike, a dense forest exploration, or a coastal treasure hunt, I’m up for the challenge. Lover of riddles, nature trails, and the thrill of uncovering secrets left by fellow explorers.</string>
+    <string name="username_text">Username</string>
+    <string name="ta_kai_9999_nsurasti_lobiai_15_nsukurti_lobiai_10">Points: 9999\nFound tresures: 15\nCreated tresures: 10\nLast seen: 2024/11/18</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="private_profile">Private Profile</string>
+    <string name="share_location">Share Location</string>
+    <string name="vibration_for_notifications">Vibration for notifications</string>
+    <string name="sound">Sound</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="ok">OK</string>
+    <string name="this_is_a_notification_message">This is a notification message</string>
+</resources>
