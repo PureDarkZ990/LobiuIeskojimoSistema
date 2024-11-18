@@ -19,6 +19,7 @@ class ProfileActivity : AppCompatActivity() {
         val logoutButton: Button = findViewById(R.id.logoutButton)
         val settingsButton: Button = findViewById(R.id.settingsButton)
         val editButton: Button = findViewById(R.id.EditButton) // New Edit button
+        val returnToMapButton: Button = findViewById(R.id.returnToMap) // Return to Map button
 
         logoutButton.setOnClickListener {
             showLogoutConfirmationDialog()
@@ -31,6 +32,16 @@ class ProfileActivity : AppCompatActivity() {
         editButton.setOnClickListener {
             showEditProfileDialog()
         }
+
+        returnToMapButton.setOnClickListener {
+            returnToMap()
+        }
+    }
+
+    private fun returnToMap() {
+        val intent = Intent(this, MainActivity::class.java) // Replace with your MainActivity class
+        startActivity(intent)
+        finish()
     }
 
     private fun showLogoutConfirmationDialog() {
