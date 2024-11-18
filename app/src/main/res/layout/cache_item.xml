@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:padding="8dp"
+    tools:layout_editor_absoluteY="56dp">
+
+    <CheckBox
+        android:id="@+id/publicCacheCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/publicate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/ratedComplexityText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="24dp"
+        android:text="@string/rated_complexity"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/userRatingText"
+        app:layout_constraintEnd_toStartOf="@+id/deleteCacheButton"
+        app:layout_constraintHorizontal_bias="0.548"
+        app:layout_constraintStart_toEndOf="@+id/publicCacheCheckbox"
+        app:layout_constraintTop_toBottomOf="@+id/approvedLabel"
+        app:layout_constraintVertical_bias="0.166" />
+
+    <TextView
+        android:id="@+id/userRatingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="116dp"
+        android:layout_marginEnd="107dp"
+        android:text="@string/user_rating"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/zoneRadiusButton"
+        app:layout_constraintStart_toStartOf="@+id/editThemeButton"
+        tools:layout_editor_absoluteY="138dp" />
+
+    <TextView
+        android:id="@+id/approvedLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="90dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/approved"
+        android:textColor="@android:color/holo_green_dark"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/deleteCacheButton"
+        app:layout_constraintHorizontal_bias="0.434"
+        app:layout_constraintStart_toEndOf="@+id/publicCacheCheckbox"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/zoneRadiusButton"
+        android:layout_width="87dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="94dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/zone_radius"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deleteCacheButton"
+        app:layout_constraintVertical_bias="0.7" />
+
+    <Button
+        android:id="@+id/editCacheButton"
+        android:layout_width="103dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="7dp"
+        android:text="@string/edit_cache"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/zoneRadiusButton"
+        app:layout_constraintStart_toEndOf="@+id/editThemeButton"
+        app:layout_constraintTop_toBottomOf="@+id/userRatingText" />
+
+    <Button
+        android:id="@+id/editThemeButton"
+        android:layout_width="86dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="110dp"
+        android:text="@string/edit_theme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/publicCacheCheckbox" />
+
+    <Button
+        android:id="@+id/deleteCacheButton"
+        android:layout_width="87dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="8dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
