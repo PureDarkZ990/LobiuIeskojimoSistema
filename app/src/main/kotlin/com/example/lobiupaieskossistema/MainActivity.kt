@@ -18,5 +18,13 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
         }
+
+        val groupButton: Button = findViewById(R.id.groupButton)
+        groupButton.setOnClickListener {
+            val intent = Intent(this, GroupsActivity::class.java)
+            startActivity(intent)
+        }
+
+
     }
 }
