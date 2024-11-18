@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white"
+    android:elevation="8dp"
+    android:layout_gravity="center">
+
+    <CheckBox
+        android:id="@+id/darkModeCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dark_mode"
+        android:layout_marginBottom="10dp" />
+
+    <CheckBox
+        android:id="@+id/privacySettingCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/private_profile"
+        android:layout_marginBottom="10dp" />
+
+    <CheckBox
+        android:id="@+id/shareLocationCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/share_location"
+        android:layout_marginBottom="10dp" />
+
+    <CheckBox
+        android:id="@+id/vibrationCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/vibration_for_notifications"
+        android:layout_marginBottom="10dp" />
+
+    <CheckBox
+        android:id="@+id/soundCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sound"
+        android:layout_marginBottom="10dp" />
+
+    <Button
+        android:id="@+id/deleteAccountButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/delete_account"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp" />
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/ok"
+        android:layout_marginTop="10dp" />
+
+</LinearLayout>
