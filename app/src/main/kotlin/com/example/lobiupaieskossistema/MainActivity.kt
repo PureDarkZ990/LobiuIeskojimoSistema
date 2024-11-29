@@ -2,6 +2,7 @@ package com.example.lobiupaieskossistema
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -10,6 +11,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -30,6 +32,27 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         profileButton.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
+        }
+
+        // Handle BottomNavigationView item clicks
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem: MenuItem ->
+            when (menuItem.itemId) {
+                R.id.manageCaches -> {
+                    var intent=Intent(this,ManageCacheActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.addCache -> {
+                    val intent = Intent(this, CacheAddActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.manageGroups -> {
+                    true
+                }
+                else -> false
+            }
         }
     }
 
