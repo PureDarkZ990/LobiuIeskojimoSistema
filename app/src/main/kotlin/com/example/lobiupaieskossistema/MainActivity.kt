@@ -61,9 +61,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     startActivity(intent)
                     true
                 }
-                R.id.groupButton > {
+                R.id.groupButton -> {
                     val intent = Intent(this, GroupsActivity::class.java)
-                    tartActivity(intent)
+                    startActivity(intent)
                     true
                 }
                 else -> false
