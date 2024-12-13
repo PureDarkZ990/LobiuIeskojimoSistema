@@ -13,4 +13,9 @@
     <item
         android:id="@+id/manageGroups"
         android:title="@string/manage_groups" />
+        
+    <item
+        android:id="@+id/groupButton"
+        android:title="Groups"/>
+
 </menu>

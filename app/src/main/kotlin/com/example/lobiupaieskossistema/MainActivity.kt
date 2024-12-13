@@ -3,6 +3,7 @@ package com.example.lobiupaieskossistema
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.widget.TextView
 import android.location.Location
 import android.os.Bundle
 import android.view.MenuItem
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
         }
-
+        
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.setOnItemSelectedListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
@@ -60,7 +61,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     startActivity(intent)
                     true
                 }
-                R.id.manageGroups -> {
+                R.id.groupButton > {
+                    val intent = Intent(this, GroupsActivity::class.java)
+                    tartActivity(intent)
                     true
                 }
                 else -> false
