@@ -33,8 +33,8 @@ object CacheData {
         cacheDAO.deleteCache(id)
     }
 
-    fun add(cache: Cache) {
-        cacheDAO.addCache(cache)
+    fun add(cache: Cache): Long {
+        return cacheDAO.addCache(cache)
     }
     fun getAll(): List<Cache> {
         return cacheDAO.getAllCaches()

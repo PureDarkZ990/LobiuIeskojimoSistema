@@ -22,7 +22,7 @@
         android:id="@+id/cacheName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Cache Name"
+        android:text="@string/cache_name"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -32,7 +32,7 @@
         android:id="@+id/cacheDescription"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Cache Description"
+        android:text="@string/cache_description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cacheName"
         app:layout_constraintEnd_toEndOf="parent" />

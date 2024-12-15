@@ -10,17 +10,25 @@ import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.lobiupaieskossistema.R
+import com.example.lobiupaieskossistema.caches.EditCacheActivity.Companion
 import com.example.lobiupaieskossistema.data.CacheData
 import com.example.lobiupaieskossistema.data.CategoryData
+import com.example.lobiupaieskossistema.data.CacheCategoryData
+import com.example.lobiupaieskossistema.data.CacheGroupData
 import com.example.lobiupaieskossistema.data.GroupData
+import com.example.lobiupaieskossistema.data.UserCacheData
 import com.example.lobiupaieskossistema.data.UserData
 import com.example.lobiupaieskossistema.models.Cache
+import com.example.lobiupaieskossistema.models.CacheCategory
+import com.example.lobiupaieskossistema.models.CacheGroup
 import com.example.lobiupaieskossistema.models.Category
+import com.example.lobiupaieskossistema.models.UserCache
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import java.io.File
@@ -37,7 +45,8 @@ class CacheAddActivity : AppCompatActivity() {
     private lateinit var cacheDescriptionInput: EditText
     private lateinit var zoneRadiusSeekBar: SeekBar
     private lateinit var zoneRadiusLabel: TextView
-    private lateinit var difficultyInput: EditText
+    private lateinit var difficultyLabel: TextView
+    private lateinit var difficultySeekBar: SeekBar
     private lateinit var categorySpinner: Spinner
     private lateinit var addNewCategoryCheckbox: CheckBox
     private lateinit var newCategoryInput: EditText
@@ -51,6 +60,7 @@ class CacheAddActivity : AppCompatActivity() {
     private lateinit var userListView: ListView
     private lateinit var groupListView: ListView
     private var selectedImageUri: Uri? = null
+    private var selectedCategoryId: Int = -1
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var currentLatitude: Double = 0.0
     private var currentLongitude: Double = 0.0
@@ -63,6 +73,9 @@ class CacheAddActivity : AppCompatActivity() {
         UserData.initialize(this)
         GroupData.initialize(this)
         CategoryData.initialize(this)
+        CacheCategoryData.initialize(this)
+        CacheGroupData.initialize(this)
+        UserCacheData.initialize(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         getLocation()
@@ -73,7 +86,8 @@ class CacheAddActivity : AppCompatActivity() {
         cacheDescriptionInput = findViewById(R.id.cacheDescriptionInput)
         zoneRadiusSeekBar = findViewById(R.id.zoneRadiusSeekBar)
         zoneRadiusLabel = findViewById(R.id.zoneRadiusLabel)
-        difficultyInput = findViewById(R.id.difficultyInput)
+        difficultyLabel = findViewById(R.id.difficultyLabel)
+        difficultySeekBar = findViewById(R.id.difficultySeekBar)
         categorySpinner = findViewById(R.id.categorySpinner)
         addNewCategoryCheckbox = findViewById(R.id.addNewCategoryCheckbox)
         newCategoryInput = findViewById(R.id.newCategoryInput)
@@ -89,7 +103,7 @@ class CacheAddActivity : AppCompatActivity() {
 
         val users = UserData.getAll()
         val groups = GroupData.getAll()
-        val categories = CategoryData.getAll()
+        var categories = CategoryData.getAll()
 
         val userAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_multiple_choice, users.map { it.username })
         userListView.adapter = userAdapter
@@ -103,26 +117,60 @@ class CacheAddActivity : AppCompatActivity() {
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         categorySpinner.adapter = categoryAdapter
 
+
+        categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                selectedCategoryId = categories[position].id
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                selectedCategoryId = -1
+            }
+        }
         selectImageButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
             startActivityForResult(intent, REQUEST_IMAGE_PICK)
         }
-
         addNewCategoryCheckbox.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 newCategoryInput.visibility = EditText.VISIBLE
                 addCategoryButton.visibility = Button.VISIBLE
-                categoryDescriptionLabel.visibility = EditText.VISIBLE
+                categoryDescriptionLabel.visibility = TextView.VISIBLE
                 categoryDescriptionInput.visibility = EditText.VISIBLE
             } else {
                 newCategoryInput.visibility = EditText.GONE
                 addCategoryButton.visibility = Button.GONE
-                categoryDescriptionLabel.visibility = EditText.GONE
+                categoryDescriptionLabel.visibility = TextView.GONE
                 categoryDescriptionInput.visibility = EditText.GONE
             }
         }
+        addCategoryButton.setOnClickListener {
+            val newCategoryName = newCategoryInput.text.toString()
+            val newCategoryDescription = categoryDescriptionInput.text.toString()
+            if (newCategoryName.isNotEmpty()) {
+                val newCategory = Category(0, newCategoryName, newCategoryDescription)
+                val categoryId=CategoryData.add(newCategory)
+                (categorySpinner.adapter as ArrayAdapter<String>).add(newCategoryName)
+                newCategoryInput.text.clear()
+                categoryDescriptionInput.text.clear()
+                newCategoryInput.visibility = EditText.GONE
+                addCategoryButton.visibility = Button.GONE
+                categoryDescriptionLabel.visibility = TextView.GONE
+                categoryDescriptionInput.visibility = EditText.GONE
+                addNewCategoryCheckbox.isChecked = false
+                categories = CategoryData.getAll()
+            }
+        }
+        assignGroupButton.setOnClickListener {
+            groupListView.visibility = ListView.VISIBLE
+            userListView.visibility = ListView.GONE
+        }
 
+        assignPersonButton.setOnClickListener {
+            userListView.visibility = ListView.VISIBLE
+            groupListView.visibility = ListView.GONE
+        }
         privateCacheCheckbox.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 assignGroupButton.visibility = Button.VISIBLE
@@ -130,35 +178,39 @@ class CacheAddActivity : AppCompatActivity() {
             } else {
                 assignGroupButton.visibility = Button.GONE
                 assignPersonButton.visibility = Button.GONE
+                userListView.visibility = ListView.GONE
+                groupListView.visibility = ListView.GONE
             }
         }
 
+
         zoneRadiusSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val radius = progress + 5
+                val radius = progress
                 zoneRadiusLabel.text = "Zone Radius: ${radius}m"
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
+        val defaultDifficulty = 2.5
+        difficultySeekBar.progress = (defaultDifficulty * 100).toInt()
+        difficultyLabel.text = "Difficulty Rating: $defaultDifficulty"
 
+        difficultySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                val rating = progress / 100.0
+                difficultyLabel.text = "Rating: ${rating}"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
         submitCacheButton.setOnClickListener {
             val name = cacheNameInput.text.toString()
             val description = cacheDescriptionInput.text.toString()
             val zoneRadius = zoneRadiusSeekBar.progress + 5
-            val difficulty = difficultyInput.text.toString().toDoubleOrNull() ?: 0.0
-            val category = if (addNewCategoryCheckbox.isChecked) {
-                val newCategoryName = newCategoryInput.text.toString()
-                val newCategoryDescription = categoryDescriptionInput.text.toString()
-                val newCategory = Category(0, newCategoryName, newCategoryDescription)
-                CategoryData.add(newCategory)
-                newCategoryName
-            } else {
-                categorySpinner.selectedItem.toString()
-            }
-            val isPublic = !privateCacheCheckbox.isChecked
-            val private = privateCacheCheckbox.isChecked
+            val difficulty = difficultySeekBar.progress.toString().toDoubleOrNull() ?: 0.0
 
             val selectedUsers = userListView.checkedItemPositions
                 .let { positions -> users.filterIndexed { index, _ -> positions[index] } }
@@ -166,31 +218,58 @@ class CacheAddActivity : AppCompatActivity() {
             val selectedGroups = groupListView.checkedItemPositions
                 .let { positions -> groups.filterIndexed { index, _ -> positions[index] } }
 
-            val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-
-            val newCache = Cache(
+            val cache = Cache(
                 name = name,
                 description = description,
                 xCoordinate = currentLatitude,
                 yCoordinate = currentLongitude,
                 zoneRadius = zoneRadius,
                 rating = 0.0,
-                difficulty = difficulty,
+                difficulty = difficulty / 100,
                 approved = 0,
-                createdAt = currentTime,
-                updatedAt = currentTime,
-                private = if (private) 1 else 0,
+                createdAt = null,
+                updatedAt = null,
+                private = if (privateCacheCheckbox.isChecked) 1 else 0,
                 themeId = null,
                 creatorId = null
             )
 
-            CacheData.add(newCache)
+            val cacheId = CacheData.add(cache)
+            val cacheCategory = CacheCategory(cacheId.toInt(), selectedCategoryId)
+            CacheCategoryData.add(cacheCategory)
+            if(privateCacheCheckbox.isChecked){
+                if (selectedUsers.isNotEmpty()) {
+                    println("Selected users: ${selectedUsers}")
+                    for (user in selectedUsers) {
+                        println("Adding cache to user: ${user}")
+                        UserCacheData.add(UserCache(user.id, cacheId.toInt(), 0, null, 1))
+                        println("Added cache to user: ${user}")
 
+                    }
+                }
+                if (selectedGroups.isNotEmpty()) {
+                    println("Selected groups: ${selectedGroups}")
+                    for (group in selectedGroups) {
+                        println("Adding cache to group: ${group}")
+                        CacheGroupData.add(CacheGroup(group.id, cacheId.toInt()))
+                        println("Added cache to group: ${group}")
+                    }
+                }
+            }else{
+                for (user in users) {
+                    UserCacheData.add(UserCache(user.id, cacheId.toInt(), 0, null, 1))
+                }
+            }
             selectedImageUri?.let { uri ->
-                saveImageToInternalStorage(this, (cacheImageView.drawable as BitmapDrawable).bitmap, "cache-images", "${newCache.id}.png")
+                saveImageToInternalStorage(this, (cacheImageView.drawable as BitmapDrawable).bitmap, "cache-images", "${cacheId}.png")
             }
 
             finish()
+        }
+        cacheImageView.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            startActivityForResult(intent, EditCacheActivity.REQUEST_IMAGE_PICK)
         }
     }
 
@@ -206,7 +285,6 @@ class CacheAddActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun saveImageToInternalStorage(context: Context, bitmap: Bitmap, directoryName: String, imageName: String): String? {
         val directory = File(context.filesDir, directoryName)
         if (!directory.exists()) {

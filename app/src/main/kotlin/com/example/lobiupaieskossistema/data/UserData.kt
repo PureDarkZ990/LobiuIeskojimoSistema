@@ -17,7 +17,10 @@ object UserData {
             User(1, "User 1", "hashedPassword1", "user1@example.com", "2023-01-01", 1, 1, null, 0, 0, 0, 0, 0, null, null, null, null, null, null),
             User(2, "User 2", "hashedPassword2", "user2@example.com", "2023-01-01", 1, 1, null, 0, 0, 0, 0, 0, null, null, null, null, null, null)
         )
+        println("Adding hardcoded entries to UserDAO "+userList)
         userList.forEach { userDAO.addUser(it) }
+        println("Added hardcoded entries to UserDAO "+ userDAO.getAllUsers())
+
     }
 
     fun get(id: Int): User? {

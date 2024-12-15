@@ -97,7 +97,6 @@ class EditCacheActivity : AppCompatActivity() {
             cacheDescriptionInput.setText(it.description)
             zoneRadiusInput.setText(it.zoneRadius.toString())
             privateCacheCheckbox.isChecked = it.private == 1
-            // Set other fields as needed
         }
 
         addNewCategoryCheckbox.setOnCheckedChangeListener { _, isChecked ->
@@ -225,6 +224,6 @@ class EditCacheActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val REQUEST_IMAGE_PICK = 1
+        const val REQUEST_IMAGE_PICK = 1
     }
 }

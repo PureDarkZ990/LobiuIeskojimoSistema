@@ -33,8 +33,8 @@ object CategoryData {
         categoryDAO.deleteCategory(id)
     }
 
-    fun add(cache: Category) {
-        categoryDAO.addCategory(cache)
+    fun add(cache: Category): Long {
+       return categoryDAO.addCategory(cache)
     }
 
     fun getAll(): List<Category> {

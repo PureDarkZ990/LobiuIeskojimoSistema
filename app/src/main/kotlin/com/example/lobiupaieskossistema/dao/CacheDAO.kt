@@ -62,7 +62,6 @@ class CacheDAO(context: Context) {
         cursor.close()
         return caches
     }
-
     fun findCacheById(cacheId: Int): Cache? {
         val db = dbHelper.readableDatabase
         val cursor: Cursor = db.query(
