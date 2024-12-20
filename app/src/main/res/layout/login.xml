@@ -44,7 +44,6 @@
         android:background="@color/buttonBackgroundColor"
         android:text="@string/log_in" />
 
-    <!-- Register option added here -->
     <TextView
         android:id="@+id/registerOption"
         android:layout_width="wrap_content"

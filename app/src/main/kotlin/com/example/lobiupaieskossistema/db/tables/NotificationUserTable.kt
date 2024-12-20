@@ -14,7 +14,8 @@ object NotificationUserTable {
                 $READ INTEGER,
                 PRIMARY KEY ($NOTIFICATION_ID, $USER_ID),
                 FOREIGN KEY($NOTIFICATION_ID) REFERENCES ${NotificationTable.TABLE_NAME}(${NotificationTable.ID}),
-                FOREIGN KEY($USER_ID) REFERENCES ${UserTable.TABLE_NAME}(${UserTable.ID})
+                FOREIGN KEY($USER_ID) REFERENCES ${UserTable.TABLE_NAME}(${UserTable.ID}),
+                UNIQUE($NOTIFICATION_ID, $USER_ID)
             )
         """
 }

@@ -6,7 +6,10 @@ import android.database.Cursor
 import com.example.lobiupaieskossistema.DatabaseHelper
 import com.example.lobiupaieskossistema.models.CacheGroup
 import com.example.lobiupaieskossistema.database.CacheGroupTable
-class CacheGroupDAO(context: Context) {
+import com.example.lobiupaieskossistema.models.UserCache
+import com.example.lobiupaieskossistema.models.UserGroup
+
+class CacheGroupDAO(private val context: Context) {
 
     private val dbHelper = DatabaseHelper(context)
 
@@ -16,7 +19,16 @@ class CacheGroupDAO(context: Context) {
             put(CacheGroupTable.CACHE_ID, cacheGroup.cacheId)
             put(CacheGroupTable.GROUP_ID, cacheGroup.groupId)
         }
-        return db.insert(CacheGroupTable.TABLE_NAME, null, values)
+        val result = db.insert(CacheGroupTable.TABLE_NAME, null, values)
+        if (result.toInt() != -1) {
+            val usersInGroup = UserGroupDAO(context).getAllUsersInGroup(cacheGroup.groupId)
+            usersInGroup.forEach { userId ->
+                val userCache = UserCache(userId, cacheGroup.cacheId, 0, null, 1)
+                UserCacheDAO(context).addUserCache(userCache)
+            }
+        }
+
+        return result
     }
 
     fun getAllCacheGroups(): List<CacheGroup> {
@@ -38,6 +50,7 @@ class CacheGroupDAO(context: Context) {
         cursor.close()
         return cacheGroups
     }
+
     fun findCacheGroupById(cacheId: Int, groupId: Int): CacheGroup? {
         val db = dbHelper.readableDatabase
         val cursor: Cursor = db.query(
@@ -57,6 +70,7 @@ class CacheGroupDAO(context: Context) {
         cursor.close()
         return cacheGroup
     }
+
     fun updateCacheGroup(cacheGroup: CacheGroup): Int {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {

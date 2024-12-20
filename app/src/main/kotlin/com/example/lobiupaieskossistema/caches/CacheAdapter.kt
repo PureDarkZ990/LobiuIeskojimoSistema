@@ -17,7 +17,11 @@ import com.example.lobiupaieskossistema.models.Cache
 import com.example.lobiupaieskossistema.data.CacheData
 import java.io.File
 
-class CacheAdapter(private val cacheList: MutableList<Cache>, private val context: Context) : RecyclerView.Adapter<CacheAdapter.CacheViewHolder>() {
+class CacheAdapter(
+    private val cacheList: MutableList<Cache>,
+    private val context: Context,
+    private val userRoleId: Int
+) : RecyclerView.Adapter<CacheAdapter.CacheViewHolder>() {
 
     class CacheViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cacheImageView: ImageView = itemView.findViewById(R.id.cacheImageView)
@@ -42,12 +46,11 @@ class CacheAdapter(private val cacheList: MutableList<Cache>, private val contex
         val cache = cacheList[position]
         holder.cacheName.text = cache.name
         holder.cacheDescription.text = cache.description
-        holder.cachePublic.isChecked = cache.private == 0
+        holder.cachePublic.isChecked = cache.shown == 0
         holder.ratedComplexity.text = cache.difficulty?.toString() ?: "N/A"
         holder.userRating.text = cache.rating?.toString() ?: "N/A"
         holder.approved.text = if (cache.approved == 1) "Approved" else "Not Approved"
 
-        // Load and display the cache image
         val imagePath = File(context.filesDir, "cache-images/${cache.id}.png")
         if (imagePath.exists()) {
             val bitmap = BitmapFactory.decodeFile(imagePath.absolutePath)
@@ -55,39 +58,63 @@ class CacheAdapter(private val cacheList: MutableList<Cache>, private val contex
         } else {
             holder.cacheImageView.setImageResource(R.drawable.default_image) // Set a default image if no image is found
         }
-
-        holder.zoneRadiusButton.setOnClickListener {
-            val intent = Intent(context, ChangeZoneActivity::class.java)
-            intent.putExtra("cacheId", cache.id)
-            context.startActivity(intent)
+        holder.cachePublic.setOnClickListener{
+            cache.shown = if (cache.shown == 1) 0 else 1
+            CacheData.update(cache)
+            notifyItemChanged(position)
         }
+        if (userRoleId == 1) {
 
-        holder.editCacheButton.setOnClickListener {
-            val intent = Intent(context, EditCacheActivity::class.java)
-            intent.putExtra("cacheId", cache.id)
-            context.startActivity(intent)
-        }
-
-        holder.deleteCacheButton.setOnClickListener {
-            AlertDialog.Builder(context)
-                .setTitle("Delete Cache")
-                .setMessage("Are you sure you want to delete this cache?")
-                .setPositiveButton("Yes") { _, _ ->
-                    // Remove the cache from the list and notify the adapter
-                    cacheList.removeAt(position)
-                    notifyItemRemoved(position)
-                    notifyItemRangeChanged(position, cacheList.size)
-                    // Perform the actual deletion from the database if needed
-                    CacheData.delete(cache.id)
-                }
-                .setNegativeButton("No", null)
-                .show()
-        }
-
-        holder.editThemeButton.setOnClickListener {
-            val intent = Intent(context, ManageThemeActivity::class.java)
-            intent.putExtra("themeId", cache.themeId)
-            context.startActivity(intent)
+            holder.approved.setOnClickListener {
+                cache.approved = if (cache.approved == 1) 0 else 1
+                CacheData.update(cache)
+                notifyItemChanged(position)
+            }
+            holder.deleteCacheButton.setOnClickListener {
+                AlertDialog.Builder(context)
+                    .setTitle("Delete Cache")
+                    .setMessage("Are you sure you want to delete this cache?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        cacheList.removeAt(position)
+                        notifyItemRemoved(position)
+                        notifyItemRangeChanged(position, cacheList.size)
+                        CacheData.delete(cache.id)
+                    }
+                    .setNegativeButton("No", null)
+                    .show()
+            }
+            holder.editCacheButton.visibility = View.GONE
+            holder.zoneRadiusButton.visibility = View.GONE
+            holder.editThemeButton.visibility = View.GONE
+        } else {
+            holder.editCacheButton.setOnClickListener {
+                val intent = Intent(context, EditCacheActivity::class.java)
+                intent.putExtra("cacheId", cache.id)
+                context.startActivity(intent)
+            }
+            holder.zoneRadiusButton.setOnClickListener {
+                val intent = Intent(context, ChangeZoneActivity::class.java)
+                intent.putExtra("cacheId", cache.id)
+                context.startActivity(intent)
+            }
+            holder.deleteCacheButton.setOnClickListener {
+                AlertDialog.Builder(context)
+                    .setTitle("Delete Cache")
+                    .setMessage("Are you sure you want to delete this cache?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        cacheList.removeAt(position)
+                        notifyItemRemoved(position)
+                        notifyItemRangeChanged(position, cacheList.size)
+                        CacheData.delete(cache.id)
+                    }
+                    .setNegativeButton("No", null)
+                    .show()
+            }
+            holder.editThemeButton.setOnClickListener {
+                val intent = Intent(context, ManageThemeActivity::class.java)
+                intent.putExtra("themeId", cache.themeId)
+                context.startActivity(intent)
+            }
         }
     }
 

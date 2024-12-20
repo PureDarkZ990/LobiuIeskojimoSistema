@@ -18,7 +18,8 @@ object UserCacheTable {
                 $AVAILABLE INTEGER DEFAULT 1,
                 PRIMARY KEY ($USER_ID, $CACHE_ID),
                 FOREIGN KEY($USER_ID) REFERENCES ${UserTable.TABLE_NAME}(${UserTable.ID}),
-                FOREIGN KEY($CACHE_ID) REFERENCES ${CacheTable.TABLE_NAME}(${CacheTable.ID})
+                FOREIGN KEY($CACHE_ID) REFERENCES ${CacheTable.TABLE_NAME}(${CacheTable.ID}),
+                 UNIQUE($USER_ID, $CACHE_ID)
             )
         """
 }

@@ -12,7 +12,8 @@ object CacheGroupTable {
             $GROUP_ID INTEGER,
             PRIMARY KEY ($CACHE_ID, $GROUP_ID),
             FOREIGN KEY($CACHE_ID) REFERENCES ${CacheTable.TABLE_NAME}(${CacheTable.ID}),
-            FOREIGN KEY($GROUP_ID) REFERENCES ${GroupTable.TABLE_NAME}(${GroupTable.ID})
+            FOREIGN KEY($GROUP_ID) REFERENCES ${GroupTable.TABLE_NAME}(${GroupTable.ID}),
+            UNIQUE($CACHE_ID, $GROUP_ID)
         )
     """
 }

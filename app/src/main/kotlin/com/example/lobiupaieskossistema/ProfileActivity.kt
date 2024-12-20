@@ -8,9 +8,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.lobiupaieskossistema.utils.SessionManager
 
 class ProfileActivity : AppCompatActivity() {
-
+    private lateinit var sessionManager: SessionManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
@@ -20,6 +21,15 @@ class ProfileActivity : AppCompatActivity() {
         val settingsButton: Button = findViewById(R.id.settingsButton)
         val editButton: Button = findViewById(R.id.EditButton) // New Edit button
         val returnToMapButton: Button = findViewById(R.id.returnToMap) // Return to Map button
+
+        sessionManager = SessionManager(this)
+
+        if (!sessionManager.isLoggedIn()) {
+            val intent = Intent(this, LogInActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
 
         logoutButton.setOnClickListener {
             showLogoutConfirmationDialog()
@@ -53,8 +63,8 @@ class ProfileActivity : AppCompatActivity() {
 
         val confirmButton: Button = dialog.findViewById(R.id.confirmButton)
         val cancelButton: Button = dialog.findViewById(R.id.cancelButton)
-
         confirmButton.setOnClickListener {
+            sessionManager.logout()
             val intent = Intent(this, LogInActivity::class.java)
             startActivity(intent)
             finish()

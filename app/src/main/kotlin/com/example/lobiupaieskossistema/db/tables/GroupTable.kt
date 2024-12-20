@@ -16,7 +16,7 @@ object GroupTable {
     const val CREATE_TABLE = """
         CREATE TABLE $TABLE_NAME (
             $ID INTEGER PRIMARY KEY AUTOINCREMENT,
-            $NAME TEXT NOT NULL,
+            $NAME TEXT UNIQUE NOT NULL,
             $DESCRIPTION TEXT DEFAULT 'My description',
             $ACTIVITY TEXT,
             $XACTIVITY REAL,

@@ -16,6 +16,7 @@ object CacheTable {
     const val THEME_ID = "theme_id"
     const val CREATOR_ID = "user_id"
     const val ZONE = "zone"
+    const val SHOWN = "shown"
 
     const val CREATE_TABLE = """
         CREATE TABLE $TABLE_NAME (
@@ -27,6 +28,7 @@ object CacheTable {
             $ZONE INTEGER DEFAULT 100,
             $RATING REAL,
             $DIFFICULTY REAL,
+            $SHOWN INTEGER DEFAULT 1,
             $APPROVED INTEGER DEFAULT 0,
             $CREATED_AT TEXT,
             $UPDATED_AT TEXT,
