@@ -7,8 +7,9 @@ import com.example.lobiupaieskossistema.DatabaseHelper
 import com.example.lobiupaieskossistema.database.UserTable
 import com.example.lobiupaieskossistema.database.RoleTable
 import com.example.lobiupaieskossistema.models.User
+import com.example.lobiupaieskossistema.models.UserCache
 
-class UserDAO(context: Context) {
+class UserDAO(private val context: Context) {
 
     private val dbHelper = DatabaseHelper(context)
 
@@ -34,7 +35,14 @@ class UserDAO(context: Context) {
             put(UserTable.TOKEN, user.token)
             put(UserTable.TOKEN_EXPIRE, user.tokenExpire)
         }
-        return db.insert(UserTable.TABLE_NAME, null, values)
+        val index = db.insert(UserTable.TABLE_NAME, null, values)
+        if (index != -1L) {
+            val publicCacheList=CacheDAO(context).getAllCaches().filter{ it.private==0 }
+            for (cache in publicCacheList) {
+                UserCacheDAO(context).addUserCache(UserCache(index.toInt(),cache.id))
+            }
+        }
+        return index
     }
 
     private fun getDefaultRoleId(): Int {
@@ -247,5 +255,9 @@ class UserDAO(context: Context) {
     fun deleteUser(userId: Int): Int {
         val db = dbHelper.writableDatabase
         return db.delete(UserTable.TABLE_NAME, "${UserTable.ID} = ?", arrayOf(userId.toString()))
+    }
+
+    fun isAdministrator(id: Int): Boolean {
+        return getAllAdmins().find { it.id == id }?.roleId == getAdminId()
     }
 }

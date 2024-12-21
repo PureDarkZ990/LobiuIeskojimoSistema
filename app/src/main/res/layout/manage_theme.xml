@@ -77,46 +77,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/absolute_time_timer" />
-
     </RadioGroup>
 
-    <TextView
-        android:id="@+id/bundledCacheLabel"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/timeInput"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bundled_caches"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
+        android:hint="@string/enter_time"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/timerTypeRadioGroup" />
-
-    <Button
-        android:id="@+id/addBundleCacheButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/add_bundle_cache"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bundledCacheLabel"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-    <CheckBox
-        android:id="@+id/locationRestrictionsCheckbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/location_restrictions"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addBundleCacheButton" />
+        app:layout_constraintTop_toBottomOf="@id/timerTypeRadioGroup"/>
 
     <Button
         android:id="@+id/submitThemeButton"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/submit"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
+        app:layout_constraintTop_toBottomOf="@id/timeInput"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
