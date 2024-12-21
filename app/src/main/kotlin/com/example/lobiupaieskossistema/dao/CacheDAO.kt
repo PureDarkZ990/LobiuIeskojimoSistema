@@ -45,6 +45,17 @@ class CacheDAO(private val context: Context) {
                     it
                 )
             }
+            for(admins in UserDAO(context).getAllAdmins()){
+                UserCacheDAO(context).addUserCache(
+                    UserCache(
+                        admins.id,
+                        id.toInt(),
+                        0,
+                        null,
+                        1
+                    )
+                )
+            }
             if(cache.private==0) {
                 val userList = UserDAO(context).getAllUsers()
                 for (user in userList) {
@@ -53,7 +64,6 @@ class CacheDAO(private val context: Context) {
                     UserCacheDAO(context).addUserCache(UserCache(user.id, id.toInt(), 0, null, 1))
                 }
             }else{
-                println("PRIVATE ${cache}")
                 val userList = UserDAO(context).getAllAdmins()
                 for (user in userList) {
                     val userCache = UserCache(user.id, id.toInt(), 0, null, 1)

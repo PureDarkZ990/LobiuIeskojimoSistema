@@ -7,6 +7,7 @@ import android.widget.TextView
 import android.location.Location
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -35,7 +37,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var sessionManager: SessionManager
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
@@ -55,6 +56,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         CacheData.initialize(this)
         UserCacheData.initialize(this)
         GroupData.initialize(this)
+
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -66,6 +69,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         val tabLayout: TabLayout = findViewById(R.id.tabLayout)
+        if (sessionManager.isAdministrator()) {
+            val addCacheTab = tabLayout.getTabAt(1)
+            addCacheTab?.view?.visibility = View.GONE
+        }
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 handleTabSelection(tab.position)
@@ -79,12 +86,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         })
     }
     private fun handleTabSelection(position: Int) {
+
         when (position) {
             0 -> {
                 val intent = Intent(this, ManageCacheActivity::class.java)
                 startActivity(intent)
             }
+
             1 -> {
+
                 val intent = Intent(this, CacheAddActivity::class.java)
                 startActivity(intent)
             }
@@ -116,9 +126,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun plotUserCaches() {
         val userId = sessionManager.getUserId()
         val userCaches = UserCacheData.getAll().filter { it.userId == userId && it.available == 1 }
-        for (userCache in UserCacheData.getAll()) {
-            println("UserCache: $userCache")
-        }
         for (userCache in userCaches) {
             val cache = CacheData.get(userCache.cacheId)
             cache?.let {

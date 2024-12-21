@@ -57,14 +57,16 @@ class CacheCategoryDAO(context: Context) {
         cursor.close()
         return cacheCategory
     }
-    fun updateCacheCategory(cacheCategory: CacheCategory): Int {
+    fun updateCacheCategory(cacheCategory: CacheCategory, categoryId: Int): Int {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
             put(CacheCategoryTable.CACHE_ID, cacheCategory.cacheId)
-            put(CacheCategoryTable.CATEGORY_ID, cacheCategory.categoryId)
+            put(CacheCategoryTable.CATEGORY_ID, categoryId)
         }
-        return db.update(CacheCategoryTable.TABLE_NAME, values, "${CacheCategoryTable.CACHE_ID} = ? AND ${CacheCategoryTable.CATEGORY_ID} = ?", arrayOf(cacheCategory.cacheId.toString(), cacheCategory.categoryId.toString()))
-    }
+
+        val index=db.update(CacheCategoryTable.TABLE_NAME, values, "${CacheCategoryTable.CACHE_ID} = ? AND ${CacheCategoryTable.CATEGORY_ID} = ?", arrayOf(cacheCategory.cacheId.toString(), cacheCategory.categoryId.toString()))
+        return  index
+   }
 
     fun deleteCacheCategory(cacheId: Int, categoryId: Int): Int {
         val db = dbHelper.writableDatabase

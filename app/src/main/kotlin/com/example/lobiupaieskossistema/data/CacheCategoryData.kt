@@ -10,7 +10,9 @@ object CacheCategoryData {
     fun initialize(context: Context) {
         cacheCategoryDAO = CacheCategoryDAO(context)
     }
-
+    fun get(cacheId: Int, categoryId: Int): CacheCategory? {
+        return cacheCategoryDAO.findCacheCategoryById(cacheId, categoryId)
+    }
     fun add(cacheCategory: CacheCategory): Long {
         return cacheCategoryDAO.addCacheCategory(cacheCategory)
     }
@@ -18,8 +20,8 @@ object CacheCategoryData {
     fun getAll(): List<CacheCategory> {
         return cacheCategoryDAO.getAllCacheCategories()
     }
-    fun update(cacheCategory: CacheCategory) {
-        cacheCategoryDAO.updateCacheCategory(cacheCategory)
+    fun update(cacheCategory: CacheCategory, categoryId: Int) {
+        cacheCategoryDAO.updateCacheCategory(cacheCategory,categoryId)
     }
     fun delete(cacheId: Int, categoryId: Int) {
         cacheCategoryDAO.deleteCacheCategory(cacheId, categoryId)

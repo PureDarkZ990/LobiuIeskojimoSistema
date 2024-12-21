@@ -15,6 +15,7 @@ class ThemeDAO(context: Context) {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
             put(ThemeTable.DESCRIPTION, theme.description)
+            put(ThemeTable.CACHE_ID, theme.cacheId)
             put(ThemeTable.ABSOLUTE_TIME, theme.absoluteTime)
             put(ThemeTable.TIME, theme.time)
         }
@@ -32,6 +33,7 @@ class ThemeDAO(context: Context) {
             while (moveToNext()) {
                 val theme = Theme(
                     id = getInt(getColumnIndexOrThrow(ThemeTable.ID)),
+                    cacheId = getInt(getColumnIndexOrThrow(ThemeTable.CACHE_ID)),
                     description = getString(getColumnIndexOrThrow(ThemeTable.DESCRIPTION)),
                     absoluteTime = getInt(getColumnIndexOrThrow(ThemeTable.ABSOLUTE_TIME)),
                     time = getInt(getColumnIndexOrThrow(ThemeTable.TIME))
@@ -55,6 +57,7 @@ class ThemeDAO(context: Context) {
         if (cursor.moveToFirst()) {
             theme = Theme(
                 id = cursor.getInt(cursor.getColumnIndexOrThrow(ThemeTable.ID)),
+                cacheId = cursor.getInt(cursor.getColumnIndexOrThrow(ThemeTable.CACHE_ID)),
                 description = cursor.getString(cursor.getColumnIndexOrThrow(ThemeTable.DESCRIPTION)),
                 absoluteTime = cursor.getInt(cursor.getColumnIndexOrThrow(ThemeTable.ABSOLUTE_TIME)),
                 time = cursor.getInt(cursor.getColumnIndexOrThrow(ThemeTable.TIME))
@@ -67,6 +70,7 @@ class ThemeDAO(context: Context) {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
             put(ThemeTable.DESCRIPTION, theme.description)
+            put(ThemeTable.CACHE_ID, theme.cacheId)
             put(ThemeTable.ABSOLUTE_TIME, theme.absoluteTime)
             put(ThemeTable.TIME, theme.time)
         }

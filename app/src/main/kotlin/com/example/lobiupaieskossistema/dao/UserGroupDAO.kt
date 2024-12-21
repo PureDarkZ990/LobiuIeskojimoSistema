@@ -6,6 +6,7 @@ import android.database.Cursor
 import com.example.lobiupaieskossistema.DatabaseHelper
 import com.example.lobiupaieskossistema.models.UserGroup
 import com.example.lobiupaieskossistema.database.UserGroupTable
+import com.example.lobiupaieskossistema.models.UserCache
 
 class UserGroupDAO(private val context: Context) {
 
@@ -37,6 +38,25 @@ class UserGroupDAO(private val context: Context) {
         }
         cursor.close()
         return userGroups
+    }
+    fun addUserToGroup(userId: Int, groupId: Int): Long {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(UserGroupTable.USER_ID, userId)
+            put(UserGroupTable.GROUP_ID, groupId)
+        }
+        val index= db.insert(UserGroupTable.TABLE_NAME, null, values)
+        if(index!=-1L) {
+            val cachesAssignedToThisGroupThatArentAssignedYet=CacheGroupDAO(context).getAllCacheGroups().filter{
+                it.groupId==groupId && CacheDAO(context).findCacheById(it.cacheId)?.creatorId!=userId&&
+                UserCacheDAO(context).findUserCacheById(userId,it.cacheId)?.available==0
+            }
+            cachesAssignedToThisGroupThatArentAssignedYet.forEach{
+                UserCacheDAO(context).addUserCache(UserCache(userId,it.cacheId))
+            }
+
+        }
+        return index
     }
     fun getAllUsersInGroup(groupId: Int): List<Int> {
         val db = dbHelper.readableDatabase

@@ -10,14 +10,16 @@ import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.lobiupaieskossistema.LogInActivity
 import com.example.lobiupaieskossistema.R
-import com.example.lobiupaieskossistema.caches.EditCacheActivity.Companion
 import com.example.lobiupaieskossistema.data.CacheData
 import com.example.lobiupaieskossistema.data.CategoryData
 import com.example.lobiupaieskossistema.data.CacheCategoryData
@@ -31,7 +33,6 @@ import com.example.lobiupaieskossistema.models.CacheCategory
 import com.example.lobiupaieskossistema.models.CacheGroup
 import com.example.lobiupaieskossistema.models.Category
 import com.example.lobiupaieskossistema.models.UserCache
-import com.example.lobiupaieskossistema.models.UserGroup
 import com.example.lobiupaieskossistema.utils.SessionManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -81,7 +82,6 @@ class CacheAddActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
-        UserData.initialize(this)
         GroupData.initialize(this)
         CategoryData.initialize(this)
         CacheCategoryData.initialize(this)
@@ -114,7 +114,7 @@ class CacheAddActivity : AppCompatActivity() {
         userListView = findViewById(R.id.userListView)
         groupListView = findViewById(R.id.groupListView)
 
-        val users = UserData.getAll()
+        val users = UserData.getAll().filter { sessionManager.getUserId()!=it.id&&!UserData.isAdministrator(it.id) }
         val groups = GroupData.getAll()
         var categories = CategoryData.getAll()
 
@@ -176,14 +176,14 @@ class CacheAddActivity : AppCompatActivity() {
             }
         }
         assignGroupButton.setOnClickListener {
-            groupListView.visibility = ListView.VISIBLE
-            userListView.visibility = ListView.GONE
+            showSelectionDialog(groups.map { it.name }, groupListView)
         }
 
         assignPersonButton.setOnClickListener {
-            userListView.visibility = ListView.VISIBLE
-            groupListView.visibility = ListView.GONE
+            showSelectionDialog(users.map { it.username }, userListView)
         }
+
+
         privateCacheCheckbox.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 assignGroupButton.visibility = Button.VISIBLE
@@ -255,15 +255,22 @@ class CacheAddActivity : AppCompatActivity() {
             val cacheCategory = CacheCategory(cacheId.toInt(), selectedCategoryId)
             CacheCategoryData.add(cacheCategory)
             if(privateCacheCheckbox.isChecked){
+                // Add users to the cache
                 if (selectedUsers.isNotEmpty()) {
                     for (user in selectedUsers) {
-                        UserCacheData.add(UserCache(user.id, cacheId.toInt(), 0, null, 1))
+                        UserCacheData.add(UserCache(user.id, cacheId.toInt()))
                     }
                 }
+                // Add groups to the cache
                 if (selectedGroups.isNotEmpty()) {
                     for (group in selectedGroups) {
                         CacheGroupData.add(CacheGroup(cacheId.toInt(), group.id))
                     }
+                }
+            }else{
+                // Add all users to the cache
+                for(user in UserData.getAll()){
+                    UserCacheData.add(UserCache(user.id, cacheId.toInt()))
                 }
             }
             selectedImageUri?.let { uri ->
@@ -277,6 +284,59 @@ class CacheAddActivity : AppCompatActivity() {
             intent.type = "image/*"
             startActivityForResult(intent, EditCacheActivity.REQUEST_IMAGE_PICK)
         }
+    }
+
+    private fun showSelectionDialog(items: List<String>, listView: ListView) {
+        val dialogView = layoutInflater.inflate(R.layout.user_group_selection, null)
+        val selectionListView: ListView = dialogView.findViewById(R.id.selectionListView)
+        val closeButton: Button = dialogView.findViewById(R.id.closeButton)
+        val selectAllButton: Button = dialogView.findViewById(R.id.selectAllButton)
+        val deselectAllButton: Button = dialogView.findViewById(R.id.deselectAllButton)
+        val searchInput: EditText = dialogView.findViewById(R.id.searchInput)
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_multiple_choice, items)
+        selectionListView.adapter = adapter
+
+        // Set the checked items based on the original ListView
+        for (i in 0 until listView.count) {
+            if (listView.isItemChecked(i)) {
+                selectionListView.setItemChecked(i, true)
+            }
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        closeButton.setOnClickListener {
+            // Update the original ListView with the selected items
+            for (i in 0 until selectionListView.count) {
+                listView.setItemChecked(i, selectionListView.isItemChecked(i))
+            }
+            dialog.dismiss()
+        }
+
+        selectAllButton.setOnClickListener {
+            for (i in 0 until selectionListView.count) {
+                selectionListView.setItemChecked(i, true)
+            }
+        }
+
+        deselectAllButton.setOnClickListener {
+            for (i in 0 until selectionListView.count) {
+                selectionListView.setItemChecked(i, false)
+            }
+        }
+
+        searchInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                adapter.filter.filter(s)
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        dialog.show()
     }
 
     private fun getLocation() {

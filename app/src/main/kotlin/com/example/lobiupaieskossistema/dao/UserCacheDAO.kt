@@ -7,20 +7,38 @@ import com.example.lobiupaieskossistema.DatabaseHelper
 import com.example.lobiupaieskossistema.database.UserCacheTable
 import com.example.lobiupaieskossistema.models.UserCache
 
-class UserCacheDAO(context: Context) {
+class UserCacheDAO(private val context: Context) {
 
     private val dbHelper = DatabaseHelper(context)
 
-    fun addUserCache(userCache: UserCache): Long {
+    fun addUserCache(userCache: UserCache): Any {
         val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put(UserCacheTable.USER_ID, userCache.userId)
-            put(UserCacheTable.CACHE_ID, userCache.cacheId)
-            put(UserCacheTable.FOUND, userCache.found)
-            put(UserCacheTable.RATING, userCache.rating)
-            put(UserCacheTable.AVAILABLE, userCache.available)
+
+        val cursor: Cursor = db.query(
+            UserCacheTable.TABLE_NAME,
+            null,
+            "${UserCacheTable.USER_ID} = ? AND ${UserCacheTable.CACHE_ID} = ?",
+            arrayOf(userCache.userId.toString(), userCache.cacheId.toString()),
+            null, null, null
+        )
+        val exists = cursor.moveToFirst()
+        cursor.close()
+
+        return if (exists) {
+            if(userCache.userId==CacheDAO(context).findCacheById(cacheId = userCache.cacheId)?.creatorId){
+                return userCache
+            }
+            updateUserCache(userCache)
+        } else {
+            val values = ContentValues().apply {
+                put(UserCacheTable.USER_ID, userCache.userId)
+                put(UserCacheTable.CACHE_ID, userCache.cacheId)
+                put(UserCacheTable.FOUND, userCache.found)
+                put(UserCacheTable.RATING, userCache.rating)
+                put(UserCacheTable.AVAILABLE, userCache.available)
+            }
+            db.insert(UserCacheTable.TABLE_NAME, null, values)
         }
-        return db.insert(UserCacheTable.TABLE_NAME, null, values)
     }
 
     fun getAllUserCaches(): List<UserCache> {
