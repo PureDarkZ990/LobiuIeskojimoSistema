@@ -66,8 +66,9 @@
     <TextView
         android:id="@+id/approved"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:text="@string/approved"
+        android:gravity="center"
         android:textColor="@android:color/holo_green_dark"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/userRating"

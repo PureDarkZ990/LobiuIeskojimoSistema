@@ -39,20 +39,6 @@
             android:inputType="textMultiLine" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/location_info"
-            android:textStyle="bold"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp" />
-
-        <fragment
-            android:id="@+id/mapFragment"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="160dp" />
-
-        <TextView
             android:id="@+id/zoneRadiusLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -137,7 +123,7 @@
             android:id="@+id/privateCacheCheckbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/private_cache"
+            android:text="@string/restricted"
             android:visibility="visible"
             tools:visibility="visible" />
 

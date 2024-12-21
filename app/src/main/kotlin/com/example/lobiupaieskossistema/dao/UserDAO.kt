@@ -53,7 +53,98 @@ class UserDAO(context: Context) {
         cursor.close()
         return roleId
     }
+    fun getAdminId(): Int {
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            RoleTable.TABLE_NAME,
+            arrayOf(RoleTable.ID),
+            "${RoleTable.NAME}  = ?",
+            arrayOf(RoleTable.ADMIN_ROLE),
+            null, null, null
+        )
+        var roleId = -1
+        if (cursor.moveToFirst()) {
+            roleId = cursor.getInt(cursor.getColumnIndexOrThrow(RoleTable.ID))
+        }
+        cursor.close()
+        return roleId
+    }
 
+    fun getAllAdmins() : List<User> {
+        val db = dbHelper.readableDatabase
+        val cursor: Cursor = db.query(
+            UserTable.TABLE_NAME,
+            null,
+            "${UserTable.ROLE_ID} = ?",
+            arrayOf(getAdminId().toString()),
+            null, null, null
+        )
+        val users = mutableListOf<User>()
+        with(cursor) {
+            while (moveToNext()) {
+                val user = User(
+                    id = getInt(getColumnIndexOrThrow(UserTable.ID)),
+                    username = getString(getColumnIndexOrThrow(UserTable.NAME)),
+                    hashedPassword = getString(getColumnIndexOrThrow(UserTable.HASHED_PASSWORD)),
+                    email = getString(getColumnIndexOrThrow(UserTable.EMAIL)),
+                    createdAt = getString(getColumnIndexOrThrow(UserTable.CREATED_AT)),
+                    roleId = getInt(getColumnIndexOrThrow(UserTable.ROLE_ID)),
+                    statusId = getInt(getColumnIndexOrThrow(UserTable.STATUS_ID)),
+                    lastLogin = getString(getColumnIndexOrThrow(UserTable.LAST_LOGIN)),
+                    points = getInt(getColumnIndexOrThrow(UserTable.POINTS)),
+                    soundEnabled = getInt(getColumnIndexOrThrow(UserTable.SOUND_ENABLED)),
+                    vibrationEnabled = getInt(getColumnIndexOrThrow(UserTable.VIBRATION_ENABLED)),
+                    darkMode = getInt(getColumnIndexOrThrow(UserTable.DARK_MODE)),
+                    private = getInt(getColumnIndexOrThrow(UserTable.PRIVATE)),
+                    location = getString(getColumnIndexOrThrow(UserTable.LOCATION)),
+                    phone = getString(getColumnIndexOrThrow(UserTable.PHONE)),
+                    imageId = getInt(getColumnIndexOrThrow(UserTable.IMAGE)),
+                    updatedAt = getString(getColumnIndexOrThrow(UserTable.UPDATED_AT)),
+                    token = getString(getColumnIndexOrThrow(UserTable.TOKEN)),
+                    tokenExpire = getString(getColumnIndexOrThrow(UserTable.TOKEN_EXPIRE))
+                )
+                users.add(user)
+            }
+        }
+        cursor.close()
+        return users
+    }
+    fun findUserByUsername(username: String): User? {
+        val db = dbHelper.readableDatabase
+        val cursor: Cursor = db.query(
+            UserTable.TABLE_NAME,
+            null,
+            "${UserTable.NAME} = ?",
+            arrayOf(username),
+            null, null, null
+        )
+        var user: User? = null
+        if (cursor.moveToFirst()) {
+            user = User(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.ID)),
+                username = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.NAME)),
+                hashedPassword = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.HASHED_PASSWORD)),
+                email = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.EMAIL)),
+                createdAt = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.CREATED_AT)),
+                roleId = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.ROLE_ID)),
+                statusId = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.STATUS_ID)),
+                lastLogin = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.LAST_LOGIN)),
+                points = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.POINTS)),
+                soundEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.SOUND_ENABLED)),
+                vibrationEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.VIBRATION_ENABLED)),
+                darkMode = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.DARK_MODE)),
+                private = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.PRIVATE)),
+                location = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.LOCATION)),
+                phone = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.PHONE)),
+                imageId = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.IMAGE)),
+                updatedAt = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.UPDATED_AT)),
+                token = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.TOKEN)),
+                tokenExpire = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.TOKEN_EXPIRE))
+            )
+            }
+        cursor.close()
+        return user
+    }
     fun getAllUsers(): List<User> {
         val db = dbHelper.readableDatabase
         val cursor: Cursor = db.query(

@@ -14,9 +14,9 @@ object CacheData {
 
     private fun addHardcodedEntries() {
         val cacheList = listOf(
-            Cache(1, "Cache 1", "Description 1", 54.6872, 25.2797, 100,0, 4.5, 3.0, 1, "2023-01-01", "2023-01-01", 0, null, null),
-            Cache(2, "Cache 2", "Description 2", 54.9872, 25.3797, 100, 0, 3.8, 2.0, 0, "2023-01-01", "2023-01-01", 1, null, null),
-            Cache(3, "Cache 3", "Description 3", 54.5872, 25.1797, 100,0, 4.0, 1.0, 1, "2023-01-01", "2023-01-01", 0, null, null)
+            Cache(1, "Cache 1", "Description 1", 54.6872, 25.2797, 100,0, 4.5, 3.0, 1, "2023-01-01", "2023-01-01", 0, 1,null, null),
+            Cache(2, "Cache 2", "Description 2", 54.9872, 25.3797, 100, 0, 3.8, 2.0, 0, "2023-01-01", "2023-01-01", 1, 0,null, null),
+            Cache(3, "Cache 3", "Description 3", 54.5872, 25.1797, 100,0, 4.0, 1.0, 1, "2023-01-01", "2023-01-01", 0,1, null, null)
         )
         cacheList.forEach { cacheDAO.addCache(it) }
     }
@@ -35,6 +35,9 @@ object CacheData {
 
     fun add(cache: Cache): Long {
         return cacheDAO.addCache(cache)
+    }
+    fun getAllUserCaches(creatorId:Int): List<Cache> {
+        return cacheDAO.getUserCaches(creatorId)
     }
     fun getAll(): List<Cache> {
         return cacheDAO.getAllCaches()

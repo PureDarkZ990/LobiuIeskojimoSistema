@@ -15,6 +15,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.lobiupaieskossistema.LogInActivity
 import com.example.lobiupaieskossistema.R
 import com.example.lobiupaieskossistema.caches.EditCacheActivity.Companion
 import com.example.lobiupaieskossistema.data.CacheData
@@ -24,11 +25,14 @@ import com.example.lobiupaieskossistema.data.CacheGroupData
 import com.example.lobiupaieskossistema.data.GroupData
 import com.example.lobiupaieskossistema.data.UserCacheData
 import com.example.lobiupaieskossistema.data.UserData
+import com.example.lobiupaieskossistema.data.UserGroupData
 import com.example.lobiupaieskossistema.models.Cache
 import com.example.lobiupaieskossistema.models.CacheCategory
 import com.example.lobiupaieskossistema.models.CacheGroup
 import com.example.lobiupaieskossistema.models.Category
 import com.example.lobiupaieskossistema.models.UserCache
+import com.example.lobiupaieskossistema.models.UserGroup
+import com.example.lobiupaieskossistema.utils.SessionManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import java.io.File
@@ -64,18 +68,27 @@ class CacheAddActivity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var currentLatitude: Double = 0.0
     private var currentLongitude: Double = 0.0
+    private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContentView(R.layout.add_cache)
 
+        sessionManager = SessionManager(this)
+        if (!sessionManager.isLoggedIn()) {
+            val intent = Intent(this, LogInActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
         UserData.initialize(this)
         GroupData.initialize(this)
         CategoryData.initialize(this)
         CacheCategoryData.initialize(this)
         CacheGroupData.initialize(this)
         UserCacheData.initialize(this)
+        UserGroupData.initialize(this)
+
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         getLocation()
@@ -208,6 +221,10 @@ class CacheAddActivity : AppCompatActivity() {
         })
         submitCacheButton.setOnClickListener {
             val name = cacheNameInput.text.toString()
+            if (name.isEmpty()) {
+                Toast.makeText(this, "Cache name cannot be empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val description = cacheDescriptionInput.text.toString()
             val zoneRadius = zoneRadiusSeekBar.progress + 5
             val difficulty = difficultySeekBar.progress.toString().toDoubleOrNull() ?: 0.0
@@ -217,21 +234,21 @@ class CacheAddActivity : AppCompatActivity() {
 
             val selectedGroups = groupListView.checkedItemPositions
                 .let { positions -> groups.filterIndexed { index, _ -> positions[index] } }
-
+            if (currentLatitude == 0.0 && currentLongitude == 0.0) {
+                Toast.makeText(this, "Unable to fetch current location. Please try again.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val cache = Cache(
                 name = name,
-                description = description,
+                description = description.ifEmpty { null },
                 xCoordinate = currentLatitude,
                 yCoordinate = currentLongitude,
                 zoneRadius = zoneRadius,
-                rating = 0.0,
                 difficulty = difficulty / 100,
-                approved = 0,
-                createdAt = null,
-                updatedAt = null,
+                createdAt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
+                updatedAt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
                 private = if (privateCacheCheckbox.isChecked) 1 else 0,
-                themeId = null,
-                creatorId = null
+                creatorId = sessionManager.getUserId()
             )
 
             val cacheId = CacheData.add(cache)
@@ -239,25 +256,14 @@ class CacheAddActivity : AppCompatActivity() {
             CacheCategoryData.add(cacheCategory)
             if(privateCacheCheckbox.isChecked){
                 if (selectedUsers.isNotEmpty()) {
-                    println("Selected users: ${selectedUsers}")
                     for (user in selectedUsers) {
-                        println("Adding cache to user: ${user}")
                         UserCacheData.add(UserCache(user.id, cacheId.toInt(), 0, null, 1))
-                        println("Added cache to user: ${user}")
-
                     }
                 }
                 if (selectedGroups.isNotEmpty()) {
-                    println("Selected groups: ${selectedGroups}")
                     for (group in selectedGroups) {
-                        println("Adding cache to group: ${group}")
-                        CacheGroupData.add(CacheGroup(group.id, cacheId.toInt()))
-                        println("Added cache to group: ${group}")
+                        CacheGroupData.add(CacheGroup(cacheId.toInt(), group.id))
                     }
-                }
-            }else{
-                for (user in users) {
-                    UserCacheData.add(UserCache(user.id, cacheId.toInt(), 0, null, 1))
                 }
             }
             selectedImageUri?.let { uri ->
@@ -282,6 +288,8 @@ class CacheAddActivity : AppCompatActivity() {
                     currentLatitude = it.latitude
                     currentLongitude = it.longitude
                 }
+            } ?: run {
+                Toast.makeText(this, "Unable to fetch current location. Please try again.", Toast.LENGTH_SHORT).show()
             }
         }
     }

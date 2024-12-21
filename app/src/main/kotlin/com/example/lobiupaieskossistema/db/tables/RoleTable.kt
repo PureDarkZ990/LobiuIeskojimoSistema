@@ -6,8 +6,9 @@ object RoleTable {
      const val ID = "id"
      const val NAME = "name"
      const val DEFAULT_ROLE = "regular"
+     const val ADMIN_ROLE = "admin"
      const val CREATE_TABLE = "CREATE TABLE $TABLE_NAME (" +
              "$ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-             "$NAME TEXT UNIQUE CHECK($NAME IN ('admin', 'regular')))"
+             "$NAME TEXT UNIQUE CHECK($NAME IN ('$ADMIN_ROLE', '$DEFAULT_ROLE'))"
 
 }

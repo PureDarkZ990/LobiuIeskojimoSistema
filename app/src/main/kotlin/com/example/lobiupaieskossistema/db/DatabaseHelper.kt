@@ -10,6 +10,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("PRAGMA foreign_keys=ON;")
         db.execSQL(RoleTable.CREATE_TABLE)
+        db.execSQL("INSERT INTO ${RoleTable.TABLE_NAME} (${RoleTable.NAME}) VALUES ('admin')")
+        db.execSQL("INSERT INTO ${RoleTable.TABLE_NAME} (${RoleTable.NAME}) VALUES ('regular')")
         db.execSQL(StatusTable.CREATE_TABLE)
         db.execSQL(NotificationTable.CREATE_TABLE)
         db.execSQL(ThemeTable.CREATE_TABLE)
@@ -22,7 +24,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.execSQL(NotificationUserTable.CREATE_TABLE)
         db.execSQL(CacheCategoryTable.CREATE_TABLE)
         db.execSQL(CacheGroupTable.CREATE_TABLE)
-       
+       db.execSQL(UserGroupTable.CREATE_TABLE)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -39,6 +41,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.execSQL("DROP TABLE IF EXISTS ${StatusTable.TABLE_NAME}")
         db.execSQL("DROP TABLE IF EXISTS ${NotificationTable.TABLE_NAME}")
         db.execSQL("DROP TABLE IF EXISTS ${ThemeTable.TABLE_NAME}")
+        db.execSQL("DROP TABLE IF EXISTS ${UserGroupTable.TABLE_NAME}")
         onCreate(db)
     }
 

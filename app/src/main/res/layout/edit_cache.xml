@@ -37,22 +37,17 @@
             android:layout_height="wrap_content"
             android:hint="@string/cache_description"
             android:inputType="textMultiLine" />
-
         <TextView
+            android:id="@+id/difficultyLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/location_info"
-            android:textStyle="bold"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp" />
+            android:text="@string/difficulty" />
 
-        <EditText
-            android:id="@+id/zoneRadiusInput"
+        <SeekBar
+            android:id="@+id/difficultySeekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/zone_radius"
-            android:inputType="number" />
-
+            android:max="500" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -131,35 +126,38 @@
             android:id="@+id/privateCacheCheckbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/restricted" />
+            android:text="@string/restricted"
+            android:visibility="visible"
+            tools:visibility="visible" />
 
         <Button
             android:id="@+id/assignGroupButton"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/assign_group"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/assignPersonButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/assign_person"
-            android:visibility="gone" />
-
-        <ListView
-            android:id="@+id/userListView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:choiceMode="multipleChoice"
+            tools:visibility="gone"
             android:visibility="gone" />
 
         <ListView
             android:id="@+id/groupListView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:choiceMode="multipleChoice"
+            android:layout_height="160dp"
             android:visibility="gone" />
+        <Button
+            android:id="@+id/assignPersonButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/assign_person"
+            tools:visibility="gone"
+            android:visibility="gone" />
+
+        <ListView
+            android:id="@+id/userListView"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:visibility="gone" />
+
+
 
         <Button
             android:id="@+id/submitCacheButton"

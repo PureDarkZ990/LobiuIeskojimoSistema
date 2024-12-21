@@ -11,7 +11,8 @@ object CacheCategoryTable {
         $CACHE_ID INTEGER,
         $CATEGORY_ID INTEGER,
         FOREIGN KEY($CACHE_ID) REFERENCES ${CacheTable.TABLE_NAME}(${CacheTable.ID}),
-        FOREIGN KEY($CATEGORY_ID) REFERENCES ${CategoryTable.TABLE_NAME}(${CategoryTable.ID})
+        FOREIGN KEY($CATEGORY_ID) REFERENCES ${CategoryTable.TABLE_NAME}(${CategoryTable.ID}),
+        UNIQUE($CACHE_ID, $CATEGORY_ID)
     )
 """
 }

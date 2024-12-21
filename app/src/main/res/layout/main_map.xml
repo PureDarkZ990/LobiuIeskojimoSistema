@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <!-- Map Fragment for displaying Google Maps -->
@@ -10,7 +10,7 @@
         android:id="@+id/mapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
     <!-- Button overlayed on top of the map -->
     <Button
@@ -20,15 +20,30 @@
         android:layout_gravity="top|end"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:text="Profile" />
+        android:text="@string/profile" />
 
-   <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="16dp"
-        app:menu="@menu/bottom_nav_menu" />
+        android:layout_gravity="bottom">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/manageCaches"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/manage_caches" />
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/addCache"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_cache" />
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/manageGroups"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/manage_groups" />
+    </com.google.android.material.tabs.TabLayout>
 
 
 </FrameLayout>
