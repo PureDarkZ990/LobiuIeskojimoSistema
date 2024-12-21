@@ -18,7 +18,9 @@ object CacheCategoryData {
     fun getAll(): List<CacheCategory> {
         return cacheCategoryDAO.getAllCacheCategories()
     }
-
+    fun update(cacheCategory: CacheCategory) {
+        cacheCategoryDAO.updateCacheCategory(cacheCategory)
+    }
     fun delete(cacheId: Int, categoryId: Int) {
         cacheCategoryDAO.deleteCacheCategory(cacheId, categoryId)
     }
