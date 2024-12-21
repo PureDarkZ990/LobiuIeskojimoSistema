@@ -36,14 +36,16 @@ android {
 }
 
 dependencies {
-
+    implementation (libs.play.services.location.v2101)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.material3.android)
+    implementation(libs.play.services.maps)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    //noinspection GradleDependency
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 
-    implementation("com.google.android.gms:play-services-maps:18.1.0")
 }

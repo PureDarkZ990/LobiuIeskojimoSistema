@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:text="@string/cache_name"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/cacheNameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/cache_name" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cache_description"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp" />
+
+        <EditText
+            android:id="@+id/cacheDescriptionInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/cache_description"
+            android:inputType="textMultiLine" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/location_info"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp" />
+
+        <fragment
+            android:id="@+id/mapFragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="160dp" />
+
+        <TextView
+            android:id="@+id/zoneRadiusLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/zone_radius" />
+
+        <SeekBar
+            android:id="@+id/zoneRadiusSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="200" />
+        <TextView
+            android:id="@+id/difficultyLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/difficulty" />
+
+        <SeekBar
+            android:id="@+id/difficultySeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="500" />
+        <Spinner
+            android:id="@+id/categorySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/addNewCategoryCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_new_category" />
+
+        <EditText
+            android:id="@+id/newCategoryInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/new_category"
+            tools:visibility="gone"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/categoryDescriptionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:text="@string/category_description"
+            android:textStyle="bold"
+            tools:visibility="gone"
+            android:visibility="gone"/>
+
+        <EditText
+            android:id="@+id/categoryDescriptionInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/category_description"
+            tools:visibility="gone"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/addCategoryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_category"
+            tools:visibility="gone"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/selectImageButton"
+            android:layout_width="132dp"
+            android:layout_height="wrap_content"
+            android:text="@string/select_image" />
+
+        <ImageView
+            android:id="@+id/cacheImageView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <CheckBox
+            android:id="@+id/privateCacheCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/private_cache"
+            android:visibility="visible"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/assignGroupButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/assign_group"
+            tools:visibility="gone"
+            android:visibility="gone" />
+
+        <ListView
+            android:id="@+id/groupListView"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:visibility="gone" />
+        <Button
+            android:id="@+id/assignPersonButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/assign_person"
+            tools:visibility="gone"
+            android:visibility="gone" />
+
+        <ListView
+            android:id="@+id/userListView"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:visibility="gone" />
+
+
+        <Button
+            android:id="@+id/submitCacheButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/submit_cache" />
+
+    </LinearLayout>
+</ScrollView>

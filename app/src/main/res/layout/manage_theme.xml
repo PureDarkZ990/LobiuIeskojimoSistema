@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/themeNameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/theme_name"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/themeNameInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/theme_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/themeNameLabel" />
+
+    <TextView
+        android:id="@+id/themeDescriptionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/theme_description"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/themeNameInput" />
+
+    <EditText
+        android:id="@+id/themeDescriptionInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/theme_description"
+        android:inputType="textMultiLine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/themeDescriptionLabel" />
+
+    <TextView
+        android:id="@+id/timerSelectionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/timer_type"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/themeDescriptionInput" />
+
+    <RadioGroup
+        android:id="@+id/timerTypeRadioGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timerSelectionLabel">
+
+        <RadioButton
+            android:id="@+id/zoneEnterRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/zone_enter_timer" />
+
+        <RadioButton
+            android:id="@+id/absoluteTimeRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/absolute_time_timer" />
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/bundledCacheLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bundled_caches"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timerTypeRadioGroup" />
+
+    <Button
+        android:id="@+id/addBundleCacheButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/add_bundle_cache"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bundledCacheLabel"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <CheckBox
+        android:id="@+id/locationRestrictionsCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/location_restrictions"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addBundleCacheButton" />
+
+    <Button
+        android:id="@+id/submitThemeButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/submit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,24 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingTop="10dp"
-    android:paddingEnd="10dp"
-    android:gravity="end">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent">
 
+    <!-- Map Fragment for displaying Google Maps -->
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Button overlayed on top of the map -->
     <Button
         android:id="@+id/profileButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
         android:text="Profile" />
 
-    <Button
-        android:id="@+id/groupButton"
-        android:layout_width="wrap_content"
+   <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Groups"
-        android:layout_marginTop="10dp" />
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="16dp"
+        app:menu="@menu/bottom_nav_menu" />
 
-</LinearLayout>
+
+</FrameLayout>
