@@ -56,7 +56,7 @@ class CacheAdapter(
             val bitmap = BitmapFactory.decodeFile(imagePath.absolutePath)
             holder.cacheImageView.setImageBitmap(bitmap)
         } else {
-            holder.cacheImageView.setImageResource(R.drawable.default_image) // Set a default image if no image is found
+            holder.cacheImageView.setImageResource(R.drawable.default_image)
         }
         holder.cachePublic.setOnClickListener{
             cache.shown = if (cache.shown == 1) 0 else 1
@@ -112,7 +112,7 @@ class CacheAdapter(
             }
             holder.editThemeButton.setOnClickListener {
                 val intent = Intent(context, ManageThemeActivity::class.java)
-                intent.putExtra("themeId", cache.themeId)
+                intent.putExtra("cacheId", cache.id)
                 context.startActivity(intent)
             }
         }

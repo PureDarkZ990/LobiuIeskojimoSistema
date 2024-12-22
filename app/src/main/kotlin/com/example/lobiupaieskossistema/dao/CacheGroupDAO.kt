@@ -82,6 +82,18 @@ class CacheGroupDAO(private val context: Context) {
 
     fun deleteCacheGroup(cacheId: Int, groupId: Int): Int {
         val db = dbHelper.writableDatabase
-        return db.delete(CacheGroupTable.TABLE_NAME, "${CacheGroupTable.CACHE_ID} = ? AND ${CacheGroupTable.GROUP_ID} = ?", arrayOf(cacheId.toString(), groupId.toString()))
+        deleteUsersFromCacheGroup(cacheId, groupId)
+        return  db.delete(CacheGroupTable.TABLE_NAME, "${CacheGroupTable.CACHE_ID} = ? AND ${CacheGroupTable.GROUP_ID} = ?", arrayOf(cacheId.toString(), groupId.toString()))
+    }
+    private fun deleteUsersFromCacheGroup(cacheId: Int, groupId: Int){
+        val db = dbHelper.writableDatabase
+        val usersInGroup = UserGroupDAO(context).getAllUsersInGroup(groupId).filter { userId -> userId != 0 }
+        for (userId in usersInGroup) {
+            val userCache = UserCacheDAO(context).findUserCacheById(userId, cacheId)
+            if (userCache != null&&userId!=CacheDAO(context).findCacheById(cacheId)?.creatorId) {
+                userCache.available = 0
+                UserCacheDAO(context).updateUserCache(userCache)
+            }
+        }
     }
 }
