@@ -17,6 +17,7 @@ import com.example.lobiupaieskossistema.caches.ManageCacheActivity
 import com.example.lobiupaieskossistema.data.CacheData
 import com.example.lobiupaieskossistema.data.GroupData
 import com.example.lobiupaieskossistema.data.UserCacheData
+import com.example.lobiupaieskossistema.data.UserData
 import com.example.lobiupaieskossistema.models.Cache
 import com.example.lobiupaieskossistema.utils.SessionManager
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -52,9 +53,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        CacheData.initialize(this)
-        UserCacheData.initialize(this)
-        GroupData.initialize(this)
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment
