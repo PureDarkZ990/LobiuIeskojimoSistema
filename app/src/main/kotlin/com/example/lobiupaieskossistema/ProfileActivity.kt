@@ -76,6 +76,11 @@ class ProfileActivity : AppCompatActivity() {
 
         popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
+                R.id.menu_friends -> {
+                    val intent = Intent(this, FriendshipActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
                 R.id.menu_edit_profile -> {
                     showEditProfileDialog()
                     true

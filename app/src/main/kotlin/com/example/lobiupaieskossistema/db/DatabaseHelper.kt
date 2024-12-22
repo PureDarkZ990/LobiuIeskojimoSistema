@@ -25,6 +25,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.execSQL(CacheCategoryTable.CREATE_TABLE)
         db.execSQL(CacheGroupTable.CREATE_TABLE)
        db.execSQL(UserGroupTable.CREATE_TABLE)
+        db.execSQL(FriendshipTable.CREATE_TABLE)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -42,11 +43,12 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.execSQL("DROP TABLE IF EXISTS ${NotificationTable.TABLE_NAME}")
         db.execSQL("DROP TABLE IF EXISTS ${ThemeTable.TABLE_NAME}")
         db.execSQL("DROP TABLE IF EXISTS ${UserGroupTable.TABLE_NAME}")
+        db.execSQL("DROP TABLE IF EXISTS ${FriendshipTable.TABLE_NAME}")
         onCreate(db)
     }
 
     companion object {
         private const val DATABASE_NAME = "treasure_hunt.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 3
     }
 }
