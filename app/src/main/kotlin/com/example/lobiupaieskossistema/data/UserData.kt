@@ -19,10 +19,10 @@ object UserData {
             passwords[i] = EncryptionUtils.hashPassword(passwords[i])
         }
         val userList = listOf(
-            User(1, "user1", passwords[0], "user1@example.com", "2023-01-01", 0, 1, null, 0, 0, 0, 0, 0, null, null, null, null, null, null),
-            User(2, "user2", passwords[1], "user2@example.com", "2023-01-01", 0, 1, null, 0, 0, 0, 0, 0, null, null, null, null, null, null),
-            User(3, "user3", passwords[2], "user3@example.com", "2023-01-01", 0, 1, null, 0, 0, 0, 0, 0, null, null, null, null, null, null),
-            User(4, "admin", passwords[3], "user4@example.com", "2023-01-01", 1, 1, null, 0, 0,0,0,0,null,null,null,null,null,null)
+            User(1, "user1", passwords[0], "user1@example.com", "2023-01-01","bio is empty", 0, 1, null, 0, 0, 0, 0, 0, null, null, null, null, null, null),
+            User(2, "user2", passwords[1], "user2@example.com", "2023-01-01","bio is empty", 0, 1, null, 0, 0, 0, 0, 0, null, null, null, null, null, null),
+            User(3, "user3", passwords[2], "user3@example.com", "2023-01-01","bio is empty", 0, 1, null, 0, 0, 0, 0, 0, null, null, null, null, null, null),
+            User(4, "admin", passwords[3], "user4@example.com", "2023-01-01", "bio is empty",1, 1, null, 0, 0,0,0,0,null,null,null,null,null,null)
         )
         userList.forEach { userDAO.addUser(it) }
 

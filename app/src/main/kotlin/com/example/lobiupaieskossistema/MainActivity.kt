@@ -3,10 +3,8 @@ package com.example.lobiupaieskossistema
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.widget.TextView
 import android.location.Location
 import android.os.Bundle
-import android.view.MenuItem
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +25,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -45,16 +42,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         if (!sessionManager.isLoggedIn()) {
             val intent = Intent(this, LogInActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
+            return
         }
 
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
         CacheData.initialize(this)
         UserCacheData.initialize(this)
         GroupData.initialize(this)
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -78,6 +76,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
     }
+
     private fun handleTabSelection(position: Int) {
         when (position) {
             0 -> {
@@ -94,6 +93,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
@@ -111,14 +111,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
         }
+
         plotUserCaches()
     }
+
     private fun plotUserCaches() {
         val userId = sessionManager.getUserId()
         val userCaches = UserCacheData.getAll().filter { it.userId == userId && it.available == 1 }
-        for (userCache in UserCacheData.getAll()) {
-            println("UserCache: $userCache")
-        }
         for (userCache in userCaches) {
             val cache = CacheData.get(userCache.cacheId)
             cache?.let {

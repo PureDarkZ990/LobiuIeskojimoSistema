@@ -18,6 +18,7 @@ class UserDAO(context: Context) {
             put(UserTable.NAME, user.username)
             put(UserTable.HASHED_PASSWORD, user.hashedPassword)
             put(UserTable.EMAIL, user.email)
+            put(UserTable.BIO, user.bio)
             put(UserTable.CREATED_AT, user.createdAt)
             put(UserTable.ROLE_ID, user.roleId)
             put(UserTable.STATUS_ID, user.statusId)
@@ -87,6 +88,7 @@ class UserDAO(context: Context) {
                     username = getString(getColumnIndexOrThrow(UserTable.NAME)),
                     hashedPassword = getString(getColumnIndexOrThrow(UserTable.HASHED_PASSWORD)),
                     email = getString(getColumnIndexOrThrow(UserTable.EMAIL)),
+                    bio = getString(getColumnIndexOrThrow(UserTable.BIO)),
                     createdAt = getString(getColumnIndexOrThrow(UserTable.CREATED_AT)),
                     roleId = getInt(getColumnIndexOrThrow(UserTable.ROLE_ID)),
                     statusId = getInt(getColumnIndexOrThrow(UserTable.STATUS_ID)),
@@ -125,6 +127,7 @@ class UserDAO(context: Context) {
                 username = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.NAME)),
                 hashedPassword = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.HASHED_PASSWORD)),
                 email = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.EMAIL)),
+                bio = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.BIO)),
                 createdAt = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.CREATED_AT)),
                 roleId = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.ROLE_ID)),
                 statusId = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.STATUS_ID)),
@@ -159,6 +162,7 @@ class UserDAO(context: Context) {
                     username = getString(getColumnIndexOrThrow(UserTable.NAME)),
                     hashedPassword = getString(getColumnIndexOrThrow(UserTable.HASHED_PASSWORD)),
                     email = getString(getColumnIndexOrThrow(UserTable.EMAIL)),
+                    bio = getString(getColumnIndexOrThrow(UserTable.BIO)),
                     createdAt = getString(getColumnIndexOrThrow(UserTable.CREATED_AT)),
                     roleId = getInt(getColumnIndexOrThrow(UserTable.ROLE_ID)),
                     statusId = getInt(getColumnIndexOrThrow(UserTable.STATUS_ID)),
@@ -198,6 +202,7 @@ class UserDAO(context: Context) {
                 username = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.NAME)),
                 hashedPassword = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.HASHED_PASSWORD)),
                 email = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.EMAIL)),
+                bio = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.BIO)),
                 createdAt = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.CREATED_AT)),
                 roleId = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.ROLE_ID)),
                 statusId = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.STATUS_ID)),
@@ -225,6 +230,7 @@ class UserDAO(context: Context) {
             put(UserTable.NAME, user.username)
             put(UserTable.HASHED_PASSWORD, user.hashedPassword)
             put(UserTable.EMAIL, user.email)
+            put(UserTable.BIO, user.bio)
             put(UserTable.CREATED_AT, user.createdAt)
             put(UserTable.ROLE_ID, user.roleId)
             put(UserTable.STATUS_ID, user.statusId)
