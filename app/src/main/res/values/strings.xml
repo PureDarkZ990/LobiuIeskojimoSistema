@@ -77,4 +77,5 @@
     <string name="logout">Logout</string>
     <string name="profile">Profile</string>
     <string name="enter_time">Enter Time</string>
+    <string name="theme_timing">Theme Timing</string>
 </resources>

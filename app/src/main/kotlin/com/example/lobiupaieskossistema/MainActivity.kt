@@ -17,6 +17,7 @@ import com.example.lobiupaieskossistema.caches.CacheAddActivity
 import com.example.lobiupaieskossistema.caches.ManageCacheActivity
 import com.example.lobiupaieskossistema.data.CacheData
 import com.example.lobiupaieskossistema.data.GroupData
+import com.example.lobiupaieskossistema.data.ThemeData
 import com.example.lobiupaieskossistema.data.UserCacheData
 import com.example.lobiupaieskossistema.models.Cache
 import com.example.lobiupaieskossistema.utils.SessionManager
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         CacheData.initialize(this)
         UserCacheData.initialize(this)
         GroupData.initialize(this)
-
+        ThemeData.initialize(this)
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment

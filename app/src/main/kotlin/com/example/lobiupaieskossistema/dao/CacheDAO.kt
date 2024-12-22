@@ -7,6 +7,8 @@ import com.example.lobiupaieskossistema.DatabaseHelper
 import com.example.lobiupaieskossistema.database.CacheTable
 import com.example.lobiupaieskossistema.models.Cache
 import com.example.lobiupaieskossistema.models.UserCache
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 class CacheDAO(private val context: Context) {
 
@@ -201,5 +203,55 @@ class CacheDAO(private val context: Context) {
         cursor.close()
         return caches
 
+    }
+
+    fun getRecommendedCaches(userId: Int, currentLatitude: Double, currentLongitude: Double): List<Cache> {
+
+        // Calculate weights for each cache
+        val userCacheDAO = UserCacheDAO(context)
+        val userCaches=userCacheDAO.getAllUserCaches()
+        val caches = getAllCaches().filter {
+                it.creatorId!=userId
+                userCaches.find { cache ->  cache.cacheId == it.id&&
+                                            cache.userId==userId }?.
+                                            available==1
+
+        }
+        val foundCaches = userCaches.filter {
+            it.found == 1&&
+            it.userId==userId&&
+            userId!=findCacheById(it.cacheId)?.creatorId
+        }
+        val averageDifficulty = foundCaches.map { it.rating ?: 0.0 }.average()
+        val commonCategories = foundCaches.groupBy { it.cacheId }.mapValues { it.value.size }
+
+        val userFoundCaches = foundCaches.filter { it.userId == userId }
+        val themedCachesCount = userFoundCaches.count { cache -> caches.find { it.id == cache.cacheId }?.themeId != null }
+        val nonThemedCachesCount = userFoundCaches.size - themedCachesCount
+        val prefersThemed = themedCachesCount > nonThemedCachesCount
+
+        val weightedCaches = caches.map { cache ->
+            val distance = sqrt(
+                (cache.xCoordinate - currentLatitude) * (cache.xCoordinate - currentLatitude) +
+                        (cache.yCoordinate - currentLongitude) * (cache.yCoordinate - currentLongitude)
+            )
+            val distanceWeight = if (distance <= 10) 1.0 else 1.0 / distance
+
+            val difficultyWeight = 1.0 / (1.0 + abs((cache.difficulty ?: 0.0) - averageDifficulty))
+
+            val categoryWeight = (commonCategories[cache.id] ?: 0) / foundCaches.size.toDouble()
+
+            val themeWeight = if (prefersThemed) {
+                if (cache.themeId != null) 1.0 else 0.5
+            } else {
+                if (cache.themeId == null) 1.0 else 0.5
+            }
+
+            val totalWeight = distanceWeight + difficultyWeight + categoryWeight + themeWeight
+
+            cache to totalWeight
+        }
+
+        return weightedCaches.sortedByDescending { it.second }.map { it.first }
     }
 }
