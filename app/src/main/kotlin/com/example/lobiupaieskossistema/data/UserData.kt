@@ -10,8 +10,10 @@ object UserData {
     private lateinit var userDAO: UserDAO
 
     fun initialize(context: Context) {
-        userDAO = UserDAO(context)
-        addHardcodedEntries()
+        if (!::userDAO.isInitialized) {
+            userDAO = UserDAO(context)
+            addHardcodedEntries()
+        }
     }
 
     private fun addHardcodedEntries() {
