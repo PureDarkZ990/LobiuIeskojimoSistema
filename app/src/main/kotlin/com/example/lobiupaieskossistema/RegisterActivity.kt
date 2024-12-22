@@ -10,13 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.lobiupaieskossistema.dao.UserDAO
 import com.example.lobiupaieskossistema.models.User
 import com.example.lobiupaieskossistema.utils.EncryptionUtils
+import com.example.lobiupaieskossistema.utils.SessionManager
 import java.text.SimpleDateFormat
 import java.util.*
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var userDAO: UserDAO
-
+    private lateinit var sessionManager: SessionManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
@@ -24,33 +25,29 @@ class RegisterActivity : AppCompatActivity() {
 
         userDAO = UserDAO(this)
 
+        sessionManager = SessionManager(this)
+        if (sessionManager.isLoggedIn()) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
         val usernameInput: EditText = findViewById(R.id.usernameInput)
-        val emailInput: EditText = findViewById(R.id.emailInput)
         val passwordInput: EditText = findViewById(R.id.passwordInput)
-        val repeatPasswordInput: EditText = findViewById(R.id.repeatPasswordInput)
+        val emailInput: EditText = findViewById(R.id.emailInput)
         val registerButton: Button = findViewById(R.id.registerButton)
         val loginLink: TextView = findViewById(R.id.loginLink)
-
-        // Navigate to LogInActivity
         loginLink.setOnClickListener {
             val intent = Intent(this, LogInActivity::class.java)
             startActivity(intent)
         }
-
-        // Handle register button click
         registerButton.setOnClickListener {
             val username = usernameInput.text.toString()
-            val email = emailInput.text.toString()
             val password = passwordInput.text.toString()
-            val repeatPassword = repeatPasswordInput.text.toString()
+            val email = emailInput.text.toString()
 
-            if (username.isEmpty() || email.isEmpty() || password.isEmpty() || repeatPassword.isEmpty()) {
+            if (username.isEmpty() || password.isEmpty() || email.isEmpty()) {
                 Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (password != repeatPassword) {
-                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -62,18 +59,14 @@ class RegisterActivity : AppCompatActivity() {
 
             val hashedPassword = EncryptionUtils.hashPassword(password)
             val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-
             val user = User(
                 username = username,
                 hashedPassword = hashedPassword,
                 email = email,
-                bio = "",
                 createdAt = currentDate
             )
-
             userDAO.addUser(user)
             Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
-
             val intent = Intent(this, LogInActivity::class.java)
             startActivity(intent)
             finish()

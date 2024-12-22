@@ -1,194 +1,151 @@
 package com.example.lobiupaieskossistema
 
 import android.app.Dialog
-import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.lobiupaieskossistema.utils.SessionManager
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var sessionManager: SessionManager
-    private lateinit var databaseHelper: DatabaseHelper
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContentView(R.layout.profile)
 
-        // Initialize session manager and database helper
-        sessionManager = SessionManager(this)
-        databaseHelper = DatabaseHelper(this)
+        val logoutButton: Button = findViewById(R.id.logoutButton)
+        val settingsButton: Button = findViewById(R.id.settingsButton)
+        val editButton: Button = findViewById(R.id.EditButton) // New Edit button
+        val returnToMapButton: Button = findViewById(R.id.returnToMap) // Return to Map button
 
-        // Redirect to login if not logged in
+        sessionManager = SessionManager(this)
+
         if (!sessionManager.isLoggedIn()) {
             val intent = Intent(this, LogInActivity::class.java)
             startActivity(intent)
             finish()
         }
 
-        val dropdownMenuButton: ImageButton = findViewById(R.id.dropdownMenuButton)
 
-        // Handle dropdown menu click
-        dropdownMenuButton.setOnClickListener {
-            showPopupMenu(it)
+        logoutButton.setOnClickListener {
+            showLogoutConfirmationDialog()
         }
 
-        // Load user details from database
-        loadUserProfile()
-    }
-
-    private fun loadUserProfile() {
-        val userId = sessionManager.getUserId()
-        val db = databaseHelper.readableDatabase
-        val cursor = db.query(
-            "users",
-            arrayOf("username", "bio"),
-            "id = ?",
-            arrayOf(userId.toString()),
-            null,
-            null,
-            null
-        )
-
-        if (cursor.moveToFirst()) {
-            val username = cursor.getString(cursor.getColumnIndexOrThrow("username"))
-            val bio = cursor.getString(cursor.getColumnIndexOrThrow("bio")) ?: "No bio available."
-
-            findViewById<TextView>(R.id.userName).text = username
-            findViewById<TextView>(R.id.bio).text = bio
-            findViewById<ImageView>(R.id.profileImage).setImageResource(R.drawable.default_profile_image)
+        settingsButton.setOnClickListener {
+            showSettingsDialog()
         }
-        cursor.close()
-    }
 
-    private fun showPopupMenu(view: View) {
-        val popupMenu = PopupMenu(this, view)
-        popupMenu.menuInflater.inflate(R.menu.profile_menu, popupMenu.menu)
-
-        popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
-            when (menuItem.itemId) {
-                R.id.menu_edit_profile -> {
-                    showEditProfileDialog()
-                    true
-                }
-                R.id.menu_return_to_map -> {
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                    true
-                }
-                R.id.menu_settings -> {
-                    showSettingsDialog()
-                    true
-                }
-                R.id.menu_logout -> {
-                    sessionManager.logout()
-                    val intent = Intent(this, LogInActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                    true
-                }
-                else -> false
-            }
+        editButton.setOnClickListener {
+            showEditProfileDialog()
         }
-        popupMenu.show()
+
+        returnToMapButton.setOnClickListener {
+            returnToMap()
+        }
     }
 
-    private fun showEditProfileDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.edit_profile, null)
+    private fun returnToMap() {
+        val intent = Intent(this, MainActivity::class.java) // Replace with your MainActivity class
+        startActivity(intent)
+        finish()
+    }
+
+    private fun showLogoutConfirmationDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.logout_confirmation, null)
+
         val dialog = Dialog(this)
         dialog.setContentView(dialogView)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        val usernameField = dialogView.findViewById<EditText>(R.id.usernameField)
-        val bioField = dialogView.findViewById<EditText>(R.id.bioField)
-        val saveButton = dialogView.findViewById<Button>(R.id.saveButton)
-
-        // Pre-fill current data
-        usernameField.setText(findViewById<TextView>(R.id.userName).text.toString())
-        bioField.setText(findViewById<TextView>(R.id.bio).text.toString())
-
-        saveButton.setOnClickListener {
-            val userId = sessionManager.getUserId()
-            val newUsername = usernameField.text.toString()
-            val newBio = bioField.text.toString()
-
-            updateUserProfile(userId, newUsername, newBio)
-
-            findViewById<TextView>(R.id.userName).text = newUsername
-            findViewById<TextView>(R.id.bio).text = newBio
-            dialog.dismiss()
-        }
-
-        dialog.show()
-    }
-
-    private fun updateUserProfile(userId: Int, username: String, bio: String) {
-        val db = databaseHelper.writableDatabase
-        val values = ContentValues().apply {
-            put("username", username)
-            put("bio", bio)
-        }
-        db.update("users", values, "id = ?", arrayOf(userId.toString()))
-    }
-
-    private fun showSettingsDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.settings_change, null)
-        val dialog = Dialog(this)
-        dialog.setContentView(dialogView)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        dialog.findViewById<Button>(R.id.deleteAccountButton).setOnClickListener {
-            showDeleteAccountConfirmationDialog(dialog)
-        }
-
-        dialog.findViewById<Button>(R.id.cancelButton).setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
-    }
-
-    private fun showDeleteAccountConfirmationDialog(settingsDialog: Dialog) {
-        val confirmationDialog = Dialog(this)
-        val dialogView = layoutInflater.inflate(R.layout.deletion_confirmation, null)
-        confirmationDialog.setContentView(dialogView)
-        confirmationDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        val confirmButton = dialogView.findViewById<Button>(R.id.confirmDeletionButton)
-        val cancelButton = dialogView.findViewById<Button>(R.id.cancelButton)
-
+        val confirmButton: Button = dialog.findViewById(R.id.confirmButton)
+        val cancelButton: Button = dialog.findViewById(R.id.cancelButton)
         confirmButton.setOnClickListener {
-            deleteAccount()
-            confirmationDialog.dismiss()
-            settingsDialog.dismiss()
+            sessionManager.logout()
+            val intent = Intent(this, LogInActivity::class.java)
+            startActivity(intent)
+            finish()
+            dialog.dismiss()
         }
 
         cancelButton.setOnClickListener {
-            confirmationDialog.dismiss()
+            dialog.dismiss()
         }
 
-        confirmationDialog.show()
+        dialog.show()
     }
 
-    private fun deleteAccount() {
-        val userId = sessionManager.getUserId()
-        val db = databaseHelper.writableDatabase
-        db.delete("users", "id=?", arrayOf(userId.toString()))
-        db.close()
+    private fun showSettingsDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.settings_change, null)
 
-        sessionManager.logout()
-        val intent = Intent(this, LogInActivity::class.java)
-        startActivity(intent)
-        finish()
+        val dialog = Dialog(this)
+        dialog.setContentView(dialogView)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val okButton: Button = dialog.findViewById(R.id.cancelButton)
+        val deleteAccountButton: Button = dialog.findViewById(R.id.deleteAccountButton)
+
+        okButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        deleteAccountButton.setOnClickListener {
+            showDeleteAccountConfirmationDialog()
+        }
+
+        dialog.show()
+    }
+
+    private fun showDeleteAccountConfirmationDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.deletion_confirmation, null)
+
+        val dialog = Dialog(this)
+        dialog.setContentView(dialogView)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val confirmButton: Button = dialog.findViewById(R.id.confirmDeletionButton)
+        val cancelButton: Button = dialog.findViewById(R.id.cancelButton)
+
+        confirmButton.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+            finish()
+            dialog.dismiss()
+        }
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun showEditProfileDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_profile, null)
+
+        val dialog = Dialog(this)
+        dialog.setContentView(dialogView)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val profileImage: ImageView = dialog.findViewById(R.id.profileImage)
+        val uploadImageButton: Button = dialog.findViewById(R.id.uploadImageButton)
+        val usernameField: EditText = dialog.findViewById(R.id.usernameField)
+        val bioField: EditText = dialog.findViewById(R.id.bioField)
+
+        val saveButton: Button = dialog.findViewById(R.id.saveButton)
+        val cancelButton: Button = dialog.findViewById(R.id.cancelButton)
+
+        saveButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

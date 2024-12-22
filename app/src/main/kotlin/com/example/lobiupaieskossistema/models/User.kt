@@ -7,7 +7,6 @@ data class User(
     val username: String,
     val hashedPassword: String,
     val email: String,
-    val bio: String,
     val createdAt: String,
     val roleId: Int?=0,
     val statusId: Int?=1,
