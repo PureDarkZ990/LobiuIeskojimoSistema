@@ -49,6 +49,43 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:max="200" />
+
+        <CheckBox
+            android:id="@+id/privateCacheCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/restricted"
+            android:visibility="visible"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/assignGroupButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/assign_group"
+            tools:visibility="gone"
+            android:visibility="gone" />
+
+        <ListView
+            android:id="@+id/groupListView"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:visibility="gone" />
+        <Button
+            android:id="@+id/assignPersonButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/assign_person"
+            tools:visibility="gone"
+            android:visibility="gone" />
+
+        <ListView
+            android:id="@+id/userListView"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:visibility="gone" />
+
+
         <TextView
             android:id="@+id/difficultyLabel"
             android:layout_width="wrap_content"
@@ -115,45 +152,9 @@
         <ImageView
             android:id="@+id/cacheImageView"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             android:scaleType="centerCrop"
             android:visibility="gone" />
-
-        <CheckBox
-            android:id="@+id/privateCacheCheckbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/restricted"
-            android:visibility="visible"
-            tools:visibility="visible" />
-
-        <Button
-            android:id="@+id/assignGroupButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/assign_group"
-            tools:visibility="gone"
-            android:visibility="gone" />
-
-        <ListView
-            android:id="@+id/groupListView"
-            android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:visibility="gone" />
-        <Button
-            android:id="@+id/assignPersonButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/assign_person"
-            tools:visibility="gone"
-            android:visibility="gone" />
-
-        <ListView
-            android:id="@+id/userListView"
-            android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:visibility="gone" />
-
 
         <Button
             android:id="@+id/submitCacheButton"

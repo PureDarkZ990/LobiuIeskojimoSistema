@@ -11,7 +11,7 @@ object UserCacheData {
         userCacheDAO = UserCacheDAO(context)
     }
 
-    fun add(userCache: UserCache): Long {
+    fun add(userCache: UserCache): Any {
         return userCacheDAO.addUserCache(userCache)
     }
 

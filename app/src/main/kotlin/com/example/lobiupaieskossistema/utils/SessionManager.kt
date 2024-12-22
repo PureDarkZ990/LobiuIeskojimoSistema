@@ -2,6 +2,7 @@ package com.example.lobiupaieskossistema.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.lobiupaieskossistema.data.UserData
 
 class SessionManager(context: Context) {
 
@@ -46,5 +47,8 @@ class SessionManager(context: Context) {
 
     fun getRole(): Int {
         return prefs.getInt(KEY_USER_ROLE, -1)
+    }
+    fun isAdministrator(): Boolean {
+        return UserData.isAdministrator(getUserId())
     }
 }
