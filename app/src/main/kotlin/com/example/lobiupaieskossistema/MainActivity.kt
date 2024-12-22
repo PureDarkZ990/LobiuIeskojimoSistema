@@ -3,7 +3,6 @@ package com.example.lobiupaieskossistema
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.widget.TextView
 import android.location.Location
 import android.os.Bundle
 import android.view.MenuItem
@@ -46,17 +45,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         if (!sessionManager.isLoggedIn()) {
             val intent = Intent(this, LogInActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
+            return
         }
 
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
         CacheData.initialize(this)
         UserCacheData.initialize(this)
         GroupData.initialize(this)
-
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment
@@ -85,6 +83,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
     }
+
     private fun handleTabSelection(position: Int) {
 
         when (position) {
@@ -104,6 +103,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
@@ -121,8 +121,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
         }
+
         plotUserCaches()
     }
+
     private fun plotUserCaches() {
         val userId = sessionManager.getUserId()
         val userCaches = UserCacheData.getAll().filter { it.userId == userId && it.available == 1 }

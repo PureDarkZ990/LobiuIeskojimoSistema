@@ -40,8 +40,18 @@
         android:id="@+id/passwordInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="16dp"
         android:hint="@string/password"
+        android:importantForAutofill="no"
+        android:inputType="textPassword"
+        android:padding="12dp" />
+
+    <EditText
+        android:id="@+id/repeatPasswordInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:hint="@string/repeat_password"
         android:importantForAutofill="no"
         android:inputType="textPassword"
         android:padding="12dp" />

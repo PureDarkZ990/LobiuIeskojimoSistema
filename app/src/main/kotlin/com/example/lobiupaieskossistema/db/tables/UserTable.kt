@@ -7,6 +7,7 @@ object UserTable {
     const val NAME = "username"
     const val HASHED_PASSWORD = "hashed_password"
     const val EMAIL = "email"
+    const val BIO = "bio"
     const val CREATED_AT = "created_at"
     const val ROLE_ID = "role_id"
     const val STATUS_ID = "status_id"
@@ -29,6 +30,7 @@ object UserTable {
         $NAME TEXT UNIQUE NOT NULL,
         $HASHED_PASSWORD TEXT NOT NULL,
         $EMAIL TEXT UNIQUE NOT NULL,
+        $BIO TEXT,
         $CREATED_AT TEXT,
         $ROLE_ID INTEGER DEFAULT 1,
         $STATUS_ID INTEGER,
