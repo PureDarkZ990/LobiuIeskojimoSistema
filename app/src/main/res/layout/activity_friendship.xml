@@ -5,11 +5,31 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <Button
-        android:id="@+id/addFriendButton"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add New Friend" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/addFriendButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Add New Friend" />
+
+        <Button
+            android:id="@+id/blockedUsersButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Blocked Users" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/sortByPointsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sort Friends" />
 
     <TextView
         android:layout_width="match_parent"

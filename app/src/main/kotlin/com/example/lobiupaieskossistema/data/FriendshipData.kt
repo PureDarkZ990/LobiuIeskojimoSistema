@@ -3,6 +3,7 @@ package com.example.lobiupaieskossistema.data
 import android.content.Context
 import com.example.lobiupaieskossistema.dao.FriendshipDAO
 import com.example.lobiupaieskossistema.models.Friendship
+import com.example.lobiupaieskossistema.models.FriendshipStatus
 
 object FriendshipData {
     private lateinit var friendshipDAO: FriendshipDAO
@@ -16,17 +17,16 @@ object FriendshipData {
 
     private fun addHardcodedEntries() {
         val friendshipList = listOf(
-            // Sukuriame keletą pavyzdinių draugysčių tarp vartotojų
-            Friendship(1, 1, 2, 1, "2023-01-01"), // user1 ir user2 yra draugai
-            Friendship(2, 1, 3, 1, "2023-01-01"), // user1 ir user3 yra draugai
-            Friendship(3, 2, 4, 1, "2023-01-01"), // user2 ir admin yra draugai
-            Friendship(4, 3, 5, 0, "2023-01-01"), // user3 siuntė užklausą user4
-            Friendship(5, 6, 1, 2, "2023-01-01"), // user5 atmetė user1 užklausą
-            Friendship(6, 7, 8, 1, "2023-01-01"), // user6 ir user7 yra draugai
-            Friendship(7, 9, 10, 1, "2023-01-01"), // user8 ir user9 yra draugai
-            Friendship(8, 11, 12, 0, "2023-01-01"), // user10 siuntė užklausą user11
-            Friendship(9, 13, 14, 1, "2023-01-01"), // user12 ir user13 yra draugai
-            Friendship(10, 15, 16, 3, "2023-01-01") // user14 užblokavo user15
+            Friendship(1, 1, 2, FriendshipStatus.ACCEPTED.value, "2023-01-01"),
+            Friendship(2, 1, 3, FriendshipStatus.ACCEPTED.value, "2023-01-01"),
+            Friendship(3, 2, 4, FriendshipStatus.ACCEPTED.value, "2023-01-01"),
+            Friendship(4, 3, 5, FriendshipStatus.PENDING.value, "2023-01-01"),
+            Friendship(5, 6, 1, FriendshipStatus.REJECTED.value, "2023-01-01"),
+            Friendship(6, 7, 8, FriendshipStatus.ACCEPTED.value, "2023-01-01"),
+            Friendship(7, 9, 10, FriendshipStatus.ACCEPTED.value, "2023-01-01"),
+            Friendship(8, 11, 12, FriendshipStatus.PENDING.value, "2023-01-01"),
+            Friendship(9, 13, 14, FriendshipStatus.ACCEPTED.value, "2023-01-01"),
+            Friendship(10, 15, 16, FriendshipStatus.BLOCKED.value, "2023-01-01")
         )
 
         friendshipList.forEach { friendshipDAO.addFriendship(it) }
@@ -57,30 +57,60 @@ object FriendshipData {
     }
 
     fun getPendingRequests(userId: Int): List<Friendship> {
-        return friendshipDAO.getPendingFriendRequests(userId)
+        return getFriendships(userId).filter { it.statusValue == FriendshipStatus.PENDING.value }
+    }
+
+    fun getBlockedFriendships(userId: Int): List<Friendship> {
+        return getFriendships(userId).filter { it.statusValue == FriendshipStatus.BLOCKED.value }
     }
 
     fun areFriends(userId1: Int, userId2: Int): Boolean {
-        return friendshipDAO.checkFriendshipStatus(userId1, userId2) == 1
-    }
-
-    fun getBlockedUsers(userId: Int): List<Friendship> {
-        return friendshipDAO.getBlockedFriendships(userId)
+        val friendship = getFriendships(userId1).find {
+            (it.userId == userId1 && it.friendId == userId2) ||
+                    (it.userId == userId2 && it.friendId == userId1)
+        }
+        return friendship?.statusValue == FriendshipStatus.ACCEPTED.value
     }
 
     fun acceptFriendRequest(friendshipId: Int) {
-        friendshipDAO.updateFriendshipStatus(friendshipId, 1)
+        val friendship = get(friendshipId)
+        friendship?.let {
+            update(it.copyWithStatus(FriendshipStatus.ACCEPTED))
+        }
     }
 
     fun rejectFriendRequest(friendshipId: Int) {
-        friendshipDAO.updateFriendshipStatus(friendshipId, 2)
+        val friendship = get(friendshipId)
+        friendship?.let {
+            update(it.copyWithStatus(FriendshipStatus.REJECTED))
+        }
     }
 
     fun blockUser(friendshipId: Int, blockerId: Int) {
-        friendshipDAO.blockFriendship(friendshipId, blockerId)
+        val friendship = get(friendshipId)
+        friendship?.let {
+            val blockedFriendship = it.copy(
+                statusValue = FriendshipStatus.BLOCKED.value,
+                blockedBy = blockerId,
+                updatedAt = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                    .format(java.util.Date())
+            )
+            update(blockedFriendship)
+        }
     }
 
     fun unblockUser(friendshipId: Int) {
-        friendshipDAO.unblockFriendship(friendshipId)
+        val friendship = get(friendshipId)
+        friendship?.let {
+            val unblockedFriendship = it.copy(
+                statusValue = FriendshipStatus.ACCEPTED.value,
+                blockedBy = null,
+                blockReason = null,
+                updatedAt = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                    .format(java.util.Date())
+            )
+            update(unblockedFriendship)
+        }
     }
 }
+
