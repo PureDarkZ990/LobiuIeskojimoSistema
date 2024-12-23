@@ -119,6 +119,12 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
 
         // Insert the new group into the database and return the new row's ID
-        return db.insert(GroupTable.TABLE_NAME, null, values)
+        val index = db.insert(GroupTable.TABLE_NAME, null, values)
+        if(index==-1L) {
+            println("NOT ADEDED")
+        }else{
+            println("ADDED ${index}")
+        }
+        return index
     }
 }

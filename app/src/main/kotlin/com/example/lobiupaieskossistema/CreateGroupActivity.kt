@@ -41,6 +41,7 @@ class CreateGroupActivity : AppCompatActivity() {
 
         val value = success.toInt();
         if (value != 0) {
+            println("Group created successfully ${dbHelper.getAllGroups()}")
             // Return to GroupsActivity
             finish()
         } else {

@@ -101,4 +101,33 @@ class GroupDAO(context: Context) {
         val db = dbHelper.writableDatabase
         return db.delete(GroupTable.TABLE_NAME, "${GroupTable.ID} = ?", arrayOf(groupId.toString()))
     }
+
+    fun getMyGroups(userId: Int): List<Group> {
+        val db = dbHelper.readableDatabase
+        val cursor: Cursor = db.query(
+            GroupTable.TABLE_NAME,
+            null,
+            "${GroupTable.CREATOR_ID} = ?",
+            arrayOf(userId.toString()),
+            null, null, null
+        )
+        var group: Group? = null
+        if (cursor.moveToFirst()) {
+            group = Group(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(GroupTable.ID)),
+                name = cursor.getString(cursor.getColumnIndexOrThrow(GroupTable.NAME)),
+                description = cursor.getString(cursor.getColumnIndexOrThrow(GroupTable.DESCRIPTION)),
+                activity = cursor.getString(cursor.getColumnIndexOrThrow(GroupTable.ACTIVITY)),
+                xActivity = cursor.getDouble(cursor.getColumnIndexOrThrow(GroupTable.XACTIVITY)),
+                yActivity = cursor.getDouble(cursor.getColumnIndexOrThrow(GroupTable.YACTIVITY)),
+                totalFoundCaches = cursor.getInt(cursor.getColumnIndexOrThrow(GroupTable.TOTAL_FOUND_CACHES)),
+                creatorId = cursor.getInt(cursor.getColumnIndexOrThrow(GroupTable.CREATOR_ID)),
+                createdAt = cursor.getString(cursor.getColumnIndexOrThrow(GroupTable.CREATED_AT)),
+                updatedAt = cursor.getString(cursor.getColumnIndexOrThrow(GroupTable.UPDATED_AT))
+            )
+        }
+        cursor.close()
+        return listOfNotNull(group)
+    }
+
 }

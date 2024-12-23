@@ -35,7 +35,9 @@ object GroupData {
     fun add(group: Group) {
         groupDAO.addGroup(group)
     }
-
+    fun getMyGroups(userId: Int): List<Group> {
+        return groupDAO.getMyGroups(userId)
+    }
     fun getAll(): List<Group> {
         return groupDAO.getAllGroups()
     }

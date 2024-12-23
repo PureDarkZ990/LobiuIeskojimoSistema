@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.SimpleCursorAdapter
 import androidx.appcompat.app.AppCompatActivity
+import com.example.lobiupaieskossistema.data.GroupData
 import com.example.lobiupaieskossistema.database.GroupTable
 import kotlinx.coroutines.*
 
@@ -22,13 +23,16 @@ class GroupsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.groups)
-
         // Initialize the database helper and views
         dbHelper = DatabaseHelper(this)
         userGroupList = findViewById(R.id.userGroupList)
         allGroupList = findViewById(R.id.allGroupList)
         createGroupButton = findViewById(R.id.createGroupButton)
-
+        GroupData.initialize(this)
+        val allGroups=GroupData.getAll().filter { it.creatorId==loggedInUserId }
+        for(group in allGroups) {
+            println("Group: ${group.name}")
+        }
         // Load groups
         loadUserGroups()
         loadAllGroups()
