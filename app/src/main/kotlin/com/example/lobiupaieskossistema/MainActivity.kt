@@ -16,6 +16,8 @@ import androidx.core.content.ContextCompat
 import com.example.lobiupaieskossistema.caches.CacheAddActivity
 import com.example.lobiupaieskossistema.caches.ManageCacheActivity
 import com.example.lobiupaieskossistema.data.CacheData
+import com.example.lobiupaieskossistema.data.GroupData
+import com.example.lobiupaieskossistema.data.ThemeData
 import com.example.lobiupaieskossistema.data.UserCacheData
 import com.example.lobiupaieskossistema.data.UserData
 import com.example.lobiupaieskossistema.models.Cache
@@ -59,6 +61,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        // Initialize data from both branches
+        CacheData.initialize(this)
+        UserCacheData.initialize(this)
+        GroupData.initialize(this)
+        ThemeData.initialize(this)
+
+        // Initialize the submit button from the main branch
         submitButton = findViewById(R.id.submitTreasureButton)
         submitButton.setOnClickListener {
             val cache = it.tag as? Cache

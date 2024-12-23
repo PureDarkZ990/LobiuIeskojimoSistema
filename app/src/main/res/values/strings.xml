@@ -76,6 +76,7 @@
     <string name="already_have_account">Already have an account? Log in</string>
     <string name="logout">Logout</string>
     <string name="profile">Profile</string>
+    <string name="enter_time">Enter Time</string>
+    <string name="theme_timing">Theme Timing</string>
     <string name="repeat_password">Repeat Password</string>
-    <string name="enter_time">Enter time</string>
 </resources>

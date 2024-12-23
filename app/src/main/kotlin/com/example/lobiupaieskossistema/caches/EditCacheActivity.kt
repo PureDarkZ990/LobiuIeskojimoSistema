@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.lobiupaieskossistema.MainActivity
 import com.example.lobiupaieskossistema.R
 import com.example.lobiupaieskossistema.dao.CacheGroupDAO
 import com.example.lobiupaieskossistema.dao.UserCacheDAO
@@ -230,7 +231,8 @@ class EditCacheActivity : AppCompatActivity() {
             cacheNameInput.setText(it.name)
             cacheDescriptionInput.setText(it.description)
             privateCacheCheckbox.isChecked = it.private == 1
-
+            difficultySeekBar.progress = it.difficulty?.times(100)?.toInt() ?: 250
+            difficultyLabel.text = "Difficulty Rating: ${difficultySeekBar.progress/100.0}"
             val assignedUsers = UserCacheData.getAll().filter { userCache -> userCache.cacheId == it.id }
             for (i in 0 until userAdapter.count) {
                 val user = users[i]
@@ -302,10 +304,6 @@ class EditCacheActivity : AppCompatActivity() {
             }
 
         }
-        val defaultDifficulty = 2.5
-        difficultySeekBar.progress = (defaultDifficulty * 100).toInt()
-        difficultyLabel.text = "Difficulty Rating: $defaultDifficulty"
-
         difficultySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 val rating = progress / 100.0
@@ -398,6 +396,9 @@ class EditCacheActivity : AppCompatActivity() {
                     saveImageToInternalStorage(this, bitmap, "cache-images", "${it.id}")
                 }
 
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
                 finish()
             }
         }

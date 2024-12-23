@@ -40,6 +40,9 @@ object CacheData {
     fun getAllUserCaches(creatorId:Int): List<Cache> {
         return cacheDAO.getUserCaches(creatorId)
     }
+    fun getRecommendedCaches(userId: Int, currentLatitude: Double, currentLongitude: Double): List<Cache> {
+        return cacheDAO.getRecommendedCaches(userId, currentLatitude, currentLongitude)
+    }
     fun getAll(): List<Cache> {
         return cacheDAO.getAllCaches()
     }
