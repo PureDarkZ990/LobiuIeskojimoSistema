@@ -100,8 +100,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun handleTabSelection(position: Int) {
         when (position) {
-            0 -> startActivity(Intent(this, ManageCacheActivity::class.java))
-            1 -> startActivity(Intent(this, CacheAddActivity::class.java))
+
+            0 -> {
+                val intent = Intent(this, ManageCacheActivity::class.java)
+                startActivity(intent)
+            }
+
+            1 -> {
+                val intent = Intent(this, CacheAddActivity::class.java)
+                startActivity(intent)
+            }
+            2 -> {
+                val intent = Intent(this, AllGroupsActivity::class.java)
+                startActivity(intent)
+            }
+
         }
     }
 

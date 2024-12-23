@@ -1,9 +1,11 @@
 package com.example.lobiupaieskossistema
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.lobiupaieskossistema.database.*
+import android.database.Cursor
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -50,5 +52,79 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     companion object {
         private const val DATABASE_NAME = "treasure_hunt.db"
         private const val DATABASE_VERSION = 4
+    }
+
+
+    fun getAllGroups(): Cursor {
+        val db = readableDatabase
+        return db.query(
+            GroupTable.TABLE_NAME,
+            arrayOf(GroupTable.ID, GroupTable.NAME),
+            null, null, null, null, null
+        )
+    }
+
+    // Method to get groups for a specific user
+    fun getUserGroups(userId: Int): Cursor {
+        val db = readableDatabase
+        val selection = "${GroupTable.CREATOR_ID} = ?"
+        val selectionArgs = arrayOf(userId.toString())
+        return db.query(
+            GroupTable.TABLE_NAME,
+            arrayOf(GroupTable.ID, GroupTable.NAME),
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+    }
+    fun getGroupDetails(groupId: Int): Cursor {
+        val db = readableDatabase
+        val selection = "${GroupTable.ID} = ?"
+        val selectionArgs = arrayOf(groupId.toString())
+
+        // Query the database to get the group details
+        return db.query(
+            GroupTable.TABLE_NAME,
+            arrayOf(GroupTable.ID, GroupTable.NAME, GroupTable.DESCRIPTION),
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+    }
+
+    fun updateGroup(groupId: Int, newGroupName: String, newGroupDescription: String): Int {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(GroupTable.NAME, newGroupName)
+            put(GroupTable.DESCRIPTION, newGroupDescription)
+        }
+
+        // Update the group in the database and return the number of rows affected
+        val selection = "${GroupTable.ID} = ?"
+        val selectionArgs = arrayOf(groupId.toString())
+        return db.update(GroupTable.TABLE_NAME, values, selection, selectionArgs)
+    }
+
+    // Method to create a new group
+    fun createGroup(groupName: String, groupDescription: String): Long {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(GroupTable.NAME, groupName)
+            put(GroupTable.DESCRIPTION, groupDescription)
+            put(GroupTable.CREATOR_ID, 1) // Assuming the logged-in user has ID 1 for simplicity
+        }
+
+        // Insert the new group into the database and return the new row's ID
+        val index = db.insert(GroupTable.TABLE_NAME, null, values)
+        if(index==-1L) {
+            println("NOT ADEDED")
+        }else{
+            println("ADDED ${index}")
+        }
+        return index
     }
 }
