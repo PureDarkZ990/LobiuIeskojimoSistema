@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center_vertical">
+
+    <!-- Group Name Input -->
+    <TextView
+        android:id="@+id/groupNameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Group Name"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/groupNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Enter group name"
+        android:inputType="text"
+        android:padding="8dp"
+        android:background="@android:drawable/editbox_background"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Group Description Input -->
+    <TextView
+        android:id="@+id/groupDescriptionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Group Description"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/groupDescriptionEditText"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:hint="Enter group description (optional)"
+        android:inputType="textMultiLine"
+        android:padding="8dp"
+        android:background="@android:drawable/editbox_background"
+        android:layout_marginBottom="16dp"
+        android:gravity="top|start"
+        android:scrollbars="vertical" />
+
+    <!-- Create Group Button -->
+    <Button
+        android:id="@+id/createButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Create Group"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

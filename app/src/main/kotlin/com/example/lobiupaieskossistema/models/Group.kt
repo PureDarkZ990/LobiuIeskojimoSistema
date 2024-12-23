@@ -12,3 +12,4 @@ data class Group(
     val createdAt: String?,
     val updatedAt: String?
 )
+

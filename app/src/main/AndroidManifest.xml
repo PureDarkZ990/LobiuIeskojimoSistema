@@ -33,6 +33,14 @@
             android:exported="true">
         </activity>
 
+        <activity android:name=".GroupDetailsActivity"
+            android:exported="true">
+        </activity>
+
+        <activity android:name=".CreateGroupActivity"
+            android:exported="true">
+        </activity>
+
         <activity android:name=".ProfileActivity"
             android:exported="true">
         </activity>
