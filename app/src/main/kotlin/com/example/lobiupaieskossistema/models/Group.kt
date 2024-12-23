@@ -7,7 +7,7 @@ data class Group(
     val activity: String?,
     val xActivity: Double?,
     val yActivity: Double?,
-    val totalFoundCaches: Int = 0,
+    val totalFoundCaches: Int? = 0,
     val creatorId: Int?,
     val createdAt: String?,
     val updatedAt: String?

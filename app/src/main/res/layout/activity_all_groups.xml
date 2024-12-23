@@ -3,26 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="120dp">
+    android:paddingTop="100dp">
 
-    <EditText
-        android:id="@+id/groupNameEditText"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Group Name"
-        android:inputType="text"/>
+        android:text="All Groups"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
 
-    <EditText
-        android:id="@+id/groupDescriptionEditText"
+    <ListView
+        android:id="@+id/groupListView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Group Description"
-        android:inputType="text"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
     <Button
-        android:id="@+id/saveGroupButton"
+        android:id="@+id/addGroupButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save Group"
+        android:text="Create New Group"
         android:layout_marginTop="16dp"/>
 </LinearLayout>

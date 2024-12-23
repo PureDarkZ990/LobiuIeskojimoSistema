@@ -1,4 +1,4 @@
-package com.example.lobiupaieskossistema.caches;
+package com.example.lobiupaieskossistema.caches
 
 import android.content.Intent
 import android.os.Bundle
@@ -22,6 +22,7 @@ class ManageCacheActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportActionBar?.hide()
         supportActionBar?.hide()
         setContentView(R.layout.manage_caches)
 

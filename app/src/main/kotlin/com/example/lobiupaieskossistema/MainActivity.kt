@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 startActivity(intent)
             }
             2 -> {
-                val intent = Intent(this, GroupsActivity::class.java)
+                val intent = Intent(this, AllGroupsActivity::class.java)
                 startActivity(intent)
             }
         }

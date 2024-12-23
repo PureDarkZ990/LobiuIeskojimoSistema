@@ -1,107 +1,58 @@
-package com.example.lobiupaieskossistema
+/*package com.example.lobiupaieskossistema
 
-import android.content.Intent
-import android.database.Cursor
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import android.widget.ListView
-import android.widget.SimpleCursorAdapter
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.lobiupaieskossistema.data.GroupData
-import com.example.lobiupaieskossistema.database.GroupTable
-import kotlinx.coroutines.*
+import com.example.lobiupaieskossistema.dao.GroupDAO
+import com.example.lobiupaieskossistema.models.Group
 
 class GroupsActivity : AppCompatActivity() {
 
-    private lateinit var dbHelper: DatabaseHelper
-    private lateinit var userGroupList: ListView
-    private lateinit var allGroupList: ListView
+    private lateinit var groupListView: ListView
     private lateinit var createGroupButton: Button
-    private var loggedInUserId = 1 // Example logged-in user ID
+    private lateinit var groupDAO: GroupDAO
+
+    private val loggedInUserId = 1 // For example, you should retrieve this from shared preferences or session
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.groups)
-        // Initialize the database helper and views
-        dbHelper = DatabaseHelper(this)
-        userGroupList = findViewById(R.id.userGroupList)
-        allGroupList = findViewById(R.id.allGroupList)
+
+        groupListView = findViewById(R.id.groupListView)
         createGroupButton = findViewById(R.id.createGroupButton)
-        GroupData.initialize(this)
-        val allGroups=GroupData.getAll().filter { it.creatorId==loggedInUserId }
-        for(group in allGroups) {
-            println("Group: ${group.name}")
-        }
-        // Load groups
-        loadUserGroups()
-        loadAllGroups()
 
-        // Handle Create Group button click
+        // Initialize the DAO to interact with the database
+        groupDAO = GroupDAO(this)
+
+        // Load and display the list of groups
+        loadGroupList()
+
+        // Set a listener for the "Create New Group" button
         createGroupButton.setOnClickListener {
-            openCreateGroupActivity()
-        }
-
-        // Handle user's group click
-        userGroupList.setOnItemClickListener { _, _, position, id ->
-            val intent = Intent(this, GroupDetailsActivity::class.java)
-            intent.putExtra("groupId", id.toInt())
-            intent.putExtra("isCreator", true) // Assume creator status
-            startActivity(intent)
+            // TODO: Start the CreateGroupActivity
+            // Example:
+            // val intent = Intent(this, CreateGroupActivity::class.java)
+            // startActivity(intent)
+            Toast.makeText(this, "Create New Group Clicked", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // Open activity to create a new group
-    private fun openCreateGroupActivity() {
-        val intent = Intent(this, CreateGroupActivity::class.java)
-        startActivity(intent)
-    }
+    // Method to load groups from the database and display them in the ListView
+    private fun loadGroupList() {
+        // Fetch groups from the database using GroupDAO
+        val groups = groupDAO.getAllGroups()
 
-    // Load the user's groups (with async query)
-    private fun loadUserGroups() {
-        CoroutineScope(Dispatchers.Main).launch {
-            try {
-                val cursor = withContext(Dispatchers.IO) {
-                    dbHelper.getUserGroups(loggedInUserId)
-                }
-                if (cursor != null && cursor.count > 0) {
-                    val adapter = SimpleCursorAdapter(
-                        this@GroupsActivity,
-                        android.R.layout.simple_list_item_2,
-                        cursor,
-                        arrayOf(GroupTable.ID, GroupTable.NAME),
-                        intArrayOf(android.R.id.text1, android.R.id.text2),
-                        0
-                    )
-                    userGroupList.adapter = adapter
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        // Check if groups exist
+        if (groups.isNotEmpty()) {
+            // Create the custom adapter
+            val adapter = GroupAdapter(this, groups, loggedInUserId)
+            groupListView.adapter = adapter
+        } else {
+            // Show a message if there are no groups
+            Toast.makeText(this, "No groups found", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // Load all available groups (with async query)
-    private fun loadAllGroups() {
-        CoroutineScope(Dispatchers.Main).launch {
-            try {
-                val cursor = withContext(Dispatchers.IO) {
-                    dbHelper.getAllGroups()
-                }
-                if (cursor != null && cursor.count > 0) {
-                    val adapter = SimpleCursorAdapter(
-                        this@GroupsActivity,
-                        android.R.layout.simple_list_item_2,
-                        cursor,
-                        arrayOf(GroupTable.ID, GroupTable.NAME),
-                        intArrayOf(android.R.id.text1, android.R.id.text2),
-                        0
-                    )
-                    allGroupList.adapter = adapter
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-}
+}*/
