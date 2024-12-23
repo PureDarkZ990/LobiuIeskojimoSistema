@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@drawable/info_window_background">
+
+    <!-- Cache Name -->
+    <TextView
+        android:id="@+id/infoWindowTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cache Name"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@android:color/black" />
+
+    <!-- Description -->
+    <TextView
+        android:id="@+id/infoWindowDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cache Description"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:paddingTop="4dp" />
+
+    <!-- Theme -->
+    <TextView
+        android:id="@+id/infoWindowTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Theme: Nature"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:paddingTop="4dp" />
+
+    <!-- Rating -->
+    <TextView
+        android:id="@+id/infoWindowRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rating: 4.5"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:paddingTop="4dp" />
+
+    <!-- Difficulty -->
+    <TextView
+        android:id="@+id/infoWindowDifficulty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Difficulty: Medium"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:paddingTop="4dp" />
+
+    <!-- Creator -->
+    <TextView
+        android:id="@+id/infoWindowCreator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Creator: JohnDoe"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:paddingTop="4dp" />
+
+</LinearLayout>

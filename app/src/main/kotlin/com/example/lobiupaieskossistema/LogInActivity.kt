@@ -21,23 +21,29 @@ class LogInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContentView(R.layout.login)
+
         UserData.initialize(this)
         userDAO = UserDAO(this)
         sessionManager = SessionManager(this)
+
         if (sessionManager.isLoggedIn()) {
             val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
             return
         }
+
         val usernameInput: EditText = findViewById(R.id.usernameInput)
         val passwordInput: EditText = findViewById(R.id.passwordInput)
         val loginButton: Button = findViewById(R.id.loginButton)
         val registerOption: TextView = findViewById(R.id.registerOption)
+
         registerOption.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
+
         loginButton.setOnClickListener {
             val username = usernameInput.text.toString()
             val password = passwordInput.text.toString()
@@ -52,13 +58,15 @@ class LogInActivity : AppCompatActivity() {
                 Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            user.roleId?.let { it1 ->
-                sessionManager.createLoginSession(user.username, user.id,
-                    it1
-                )
+
+            user.roleId?.let { roleId ->
+                sessionManager.createLoginSession(user.username, user.id, roleId)
             }
+
             Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+
             val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }
