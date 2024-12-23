@@ -8,10 +8,10 @@
     <ImageView
         android:id="@+id/otherProfileImage"
         android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/default_profile_image"
+        android:layout_height="101dp"
         android:layout_gravity="center"
-        android:contentDescription="Profile Image" />
+        android:contentDescription="Profile Image"
+        android:src="@drawable/default_profile_image" />
 
     <TextView
         android:id="@+id/otherUserName"
@@ -20,32 +20,28 @@
         android:text="Username"
         android:textStyle="bold"
         android:textSize="18sp"
-        android:layout_gravity="center"
-        android:marginTop="8dp" />
+        android:layout_gravity="center" />
 
     <TextView
         android:id="@+id/otherBio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Bio"
-        android:layout_gravity="center"
-        android:marginTop="8dp" />
+        android:layout_gravity="center" />
 
     <TextView
         android:id="@+id/otherFoundCaches"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Found Caches: 0"
-        android:layout_gravity="center"
-        android:marginTop="8dp" />
+        android:layout_gravity="center" />
 
     <TextView
         android:id="@+id/otherEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Email"
-        android:layout_gravity="center"
-        android:marginTop="8dp" />
+        android:layout_gravity="center" />
 
     <!-- Delete Account Button -->
     <Button
