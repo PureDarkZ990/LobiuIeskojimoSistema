@@ -17,25 +17,26 @@ object CacheTable {
     const val CREATOR_ID = "user_id"
     const val ZONE = "zone"
     const val SHOWN = "shown"
+    const val PASSWORD = "password"
 
     const val CREATE_TABLE = """
-        CREATE TABLE $TABLE_NAME (
-            $ID INTEGER PRIMARY KEY AUTOINCREMENT,
-            $NAME TEXT NOT NULL,
-            $DESCRIPTION TEXT DEFAULT 'My cache',
-            $XCOORDINATE REAL NOT NULL,
-            $YCOORDINATE REAL NOT NULL,
-            $ZONE INTEGER DEFAULT 100,
-            $RATING REAL,
-            $DIFFICULTY REAL,
-            $SHOWN INTEGER DEFAULT 1,
-            $APPROVED INTEGER DEFAULT 0,
-            $CREATED_AT TEXT,
-            $UPDATED_AT TEXT,
-            $PRIVATE INTEGER DEFAULT 0,
-            $THEME_ID INTEGER,
-            $CREATOR_ID INTEGER,
-            UNIQUE($XCOORDINATE, $YCOORDINATE)
-        )
-    """
-}
+    CREATE TABLE $TABLE_NAME (
+        $ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        $NAME TEXT NOT NULL,
+        $DESCRIPTION TEXT DEFAULT 'My cache',
+        $XCOORDINATE REAL NOT NULL,
+        $YCOORDINATE REAL NOT NULL,
+        $ZONE INTEGER DEFAULT 100,
+        $RATING REAL,
+        $DIFFICULTY REAL,
+        $SHOWN INTEGER DEFAULT 1,
+        $APPROVED INTEGER DEFAULT 0,
+        $CREATED_AT TEXT,
+        $UPDATED_AT TEXT,
+        $PRIVATE INTEGER DEFAULT 0,
+        $THEME_ID INTEGER,
+        $CREATOR_ID INTEGER,
+        $PASSWORD TEXT,
+        UNIQUE($XCOORDINATE, $YCOORDINATE)
+    )
+"""}

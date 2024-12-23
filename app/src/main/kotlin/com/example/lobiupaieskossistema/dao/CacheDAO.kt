@@ -31,6 +31,7 @@ class CacheDAO(private val context: Context) {
             put(CacheTable.PRIVATE, cache.private)
             put(CacheTable.THEME_ID, cache.themeId)
             put(CacheTable.CREATOR_ID, cache.creatorId)
+            put(CacheTable.PASSWORD, cache.password)
         }
         val id= db.insert(CacheTable.TABLE_NAME, null, values)
         if(id!=-1L) {
@@ -101,7 +102,8 @@ class CacheDAO(private val context: Context) {
                     updatedAt = getString(getColumnIndexOrThrow(CacheTable.UPDATED_AT)),
                     private = getInt(getColumnIndexOrThrow(CacheTable.PRIVATE)),
                     themeId = getInt(getColumnIndexOrThrow(CacheTable.THEME_ID)),
-                    creatorId = getInt(getColumnIndexOrThrow(CacheTable.CREATOR_ID))
+                    creatorId = getInt(getColumnIndexOrThrow(CacheTable.CREATOR_ID)),
+                    password = getString(getColumnIndexOrThrow(CacheTable.PASSWORD))
                 )
                 caches.add(cache)
             }
@@ -135,7 +137,8 @@ class CacheDAO(private val context: Context) {
                 updatedAt = cursor.getString(cursor.getColumnIndexOrThrow(CacheTable.UPDATED_AT)),
                 private = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.PRIVATE)),
                 themeId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.THEME_ID)),
-                creatorId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.CREATOR_ID))
+                creatorId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.CREATOR_ID)),
+                password = cursor.getString(cursor.getColumnIndexOrThrow(CacheTable.PASSWORD)),
             )
         }
         cursor.close()
@@ -159,6 +162,7 @@ class CacheDAO(private val context: Context) {
             put(CacheTable.PRIVATE, cache.private)
             put(CacheTable.THEME_ID, cache.themeId)
             put(CacheTable.CREATOR_ID, cache.creatorId)
+            put(CacheTable.PASSWORD, cache.password)
         }
         return db.update(CacheTable.TABLE_NAME, values, "${CacheTable.ID} = ?", arrayOf(cache.id.toString()))
     }
@@ -195,7 +199,8 @@ class CacheDAO(private val context: Context) {
                     updatedAt = cursor.getString(cursor.getColumnIndexOrThrow(CacheTable.UPDATED_AT)),
                     private = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.PRIVATE)),
                     themeId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.THEME_ID)),
-                    creatorId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.CREATOR_ID))
+                    creatorId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.CREATOR_ID)),
+                    password = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.PASSWORD)).toString()
                 )
                 caches.add(cache)
             }

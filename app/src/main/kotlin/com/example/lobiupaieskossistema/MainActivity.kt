@@ -1,36 +1,33 @@
 package com.example.lobiupaieskossistema
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
-import android.os.Looper
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.lobiupaieskossistema.caches.CacheAddActivity
+import com.example.lobiupaieskossistema.caches.CacheInfoWindowAdapter
 import com.example.lobiupaieskossistema.caches.ManageCacheActivity
 import com.example.lobiupaieskossistema.data.CacheData
-import com.example.lobiupaieskossistema.data.GroupData
-import com.example.lobiupaieskossistema.data.ThemeData
 import com.example.lobiupaieskossistema.data.UserCacheData
-import com.example.lobiupaieskossistema.data.UserData
 import com.example.lobiupaieskossistema.models.Cache
+import com.example.lobiupaieskossistema.models.UserCache
 import com.example.lobiupaieskossistema.utils.SessionManager
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -42,10 +39,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var sessionManager: SessionManager
-    private lateinit var submitButton: Button
+    private var lastKnownLocation: Location? = null
+    private val markers = mutableMapOf<Int, Marker>()
+    private val circles = mutableMapOf<Int, Circle>()
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        UserCacheData.initialize(applicationContext)
         supportActionBar?.hide()
         setContentView(R.layout.main_map)
 
@@ -61,36 +65,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        // Initialize data from both branches
-        CacheData.initialize(this)
-        UserCacheData.initialize(this)
-        GroupData.initialize(this)
-        ThemeData.initialize(this)
-
-        // Initialize the submit button from the main branch
-        submitButton = findViewById(R.id.submitTreasureButton)
-        submitButton.setOnClickListener {
-            val cache = it.tag as? Cache
-            if (cache != null) {
-                AlertDialog.Builder(this)
-                    .setTitle("Treasure Found!")
-                    .setMessage("You have successfully found the treasure: ${cache.name}")
-                    .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-                    .show()
-            }
-        }
-
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        val profileButton: Button = findViewById(R.id.profileButton)
+        val profileButton = findViewById<Button>(R.id.profileButton)
         profileButton.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
 
-        val tabLayout: TabLayout = findViewById(R.id.tabLayout)
+        val filterButton = findViewById<Button>(R.id.filterButton)
+        filterButton.setOnClickListener {
+            showFilterDialog()
+        }
+
+        val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
         if (sessionManager.isAdministrator()) {
             val addCacheTab = tabLayout.getTabAt(1)
             addCacheTab?.view?.visibility = View.GONE
@@ -101,164 +90,238 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
-
             override fun onTabReselected(tab: TabLayout.Tab) {
                 handleTabSelection(tab.position)
             }
         })
+
+        startMapRefresh()
     }
 
     private fun handleTabSelection(position: Int) {
         when (position) {
-            0 -> {
-                val intent = Intent(this, ManageCacheActivity::class.java)
-                startActivity(intent)
-            }
-
-            1 -> {
-                val intent = Intent(this, CacheAddActivity::class.java)
-                startActivity(intent)
-            }
-            2 -> {
-                val intent = Intent(this, GroupsActivity::class.java)
-                startActivity(intent)
-            }
+            0 -> startActivity(Intent(this, ManageCacheActivity::class.java))
+            1 -> startActivity(Intent(this, CacheAddActivity::class.java))
         }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            map.isMyLocationEnabled = true
+        map.setInfoWindowAdapter(CacheInfoWindowAdapter(this, ::isWithinRadius) { cache ->
+            refreshMapData() // Refresh map after cache interaction
+        })
 
-            // Start continuous location updates
-            val locationRequest = LocationRequest.create().apply {
-                interval = 5000 // Check every 5 seconds
-                fastestInterval = 2000
-                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            }
-            fusedLocationClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult) {
-                    val currentLocation = locationResult.lastLocation
-                    if (currentLocation != null) {
-                        updateCurrentLocation(currentLocation)
-                    }
-                }
-            }, Looper.getMainLooper())
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
         } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            enableMyLocation()
         }
 
-        plotUserCaches()
+        refreshMapData()
+
+        map.setOnInfoWindowClickListener { marker ->
+            val cache = marker.tag as? Cache
+            if (cache != null) {
+                showCacheDialog(cache)
+            } else {
+                Toast.makeText(this, "Error: Cache data not found", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    private fun plotUserCaches() {
-        val userId = sessionManager.getUserId()
-        val userCaches = UserCacheData.getAll().filter { it.userId == userId && it.available == 1 }
-        for (userCache in userCaches) {
+    private fun enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            map.isMyLocationEnabled = true
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                location?.let {
+                    lastKnownLocation = it
+                    val currentLocation = LatLng(it.latitude, it.longitude)
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
+                }
+            }.addOnFailureListener { e ->
+                Log.e("MainActivity", "Error getting location: ${e.message}")
+            }
+        }
+    }
+
+    private fun refreshMapData() {
+        val userCaches = UserCacheData.getAll().filter { it.userId == sessionManager.getUserId() && it.available == 1 }
+        val existingCacheIds = mutableSetOf<Int>()
+
+        userCaches.forEach { userCache ->
             val cache = CacheData.get(userCache.cacheId)
             cache?.let {
+                existingCacheIds.add(it.id)
                 val position = LatLng(it.xCoordinate, it.yCoordinate)
 
-                // Add marker for the cache
-                val marker = map.addMarker(MarkerOptions().position(position).title(it.name))
-                marker?.tag = it // Attach Cache object to marker
+                val marker = markers[it.id]
+                if (marker == null) {
+                    val newMarker = map.addMarker(MarkerOptions().position(position).title(it.name))
+                    newMarker?.tag = it
+                    markers[it.id] = newMarker!!
+                }
 
-                // Add translucent circle representing the zoneRadius
-                map.addCircle(
-                    CircleOptions()
-                        .center(position)
-                        .radius(it.zoneRadius.toDouble()) // Radius in meters
-                        .strokeColor(0x550000FF) // Semi-transparent blue for stroke
-                        .fillColor(0x220000FF)   // Lighter semi-transparent blue for fill
-                        .strokeWidth(2f)        // Stroke width in pixels
-                )
-            }
-        }
-
-        map.setOnMarkerClickListener { marker ->
-            marker.showInfoWindow()
-            true
-        }
-    }
-
-    private fun updateCurrentLocation(location: Location) {
-        val userCaches = UserCacheData.getAll().filter { it.userId == sessionManager.getUserId() && it.available == 1 }
-
-        for (userCache in userCaches) {
-            val cache = CacheData.get(userCache.cacheId)
-            cache?.let {
-                if (isWithinRadius(location, it)) {
-                    showSubmitButton(it)
-                    return
+                val circle = circles[it.id]
+                if (circle == null) {
+                    val newCircle = map.addCircle(
+                        CircleOptions()
+                            .center(position)
+                            .radius(it.zoneRadius.toDouble())
+                            .strokeColor(0x550000FF)
+                            .fillColor(0x220000FF)
+                            .strokeWidth(2f)
+                    )
+                    circles[it.id] = newCircle
                 }
             }
         }
 
-        hideSubmitButton() // Hide button if not within any radius
+        val removedCacheIds = markers.keys - existingCacheIds
+        removedCacheIds.forEach { id ->
+            markers[id]?.remove()
+            markers.remove(id)
+            circles[id]?.remove()
+            circles.remove(id)
+        }
     }
 
-    private fun isWithinRadius(userLocation: Location, cache: Cache): Boolean {
+    private fun isWithinRadius(cache: Cache): Boolean {
+        if (lastKnownLocation == null) {
+            Toast.makeText(this, "Current location not available", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
         val cacheLocation = Location("").apply {
             latitude = cache.xCoordinate
             longitude = cache.yCoordinate
         }
-        return userLocation.distanceTo(cacheLocation) <= cache.zoneRadius
+
+        val distance = lastKnownLocation!!.distanceTo(cacheLocation)
+        return distance <= cache.zoneRadius
     }
 
-    private fun showSubmitButton(cache: Cache) {
-        submitButton.visibility = View.VISIBLE
-        submitButton.text = "Submit Found Treasure for ${cache.name}" // Optional: personalize button text
-        submitButton.tag = cache
-    }
-
-    private fun hideSubmitButton() {
-        submitButton.visibility = View.GONE
-    }
-
-    private fun setDefaultLocation() {
-        val defaultLocation = LatLng(54.6872, 25.2797) // Example: Vilnius coordinates
-        map.addMarker(MarkerOptions().position(defaultLocation).title("Default Location"))
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12f))
-    }
-
-    private fun getThemeName(themeId: Int): String {
-        return when (themeId) {
-            1 -> "Nature"
-            2 -> "History"
-            3 -> "Adventure"
-            else -> "Unknown Theme"
-        }
-    }
-
-    private fun getCreatorName(creatorId: Int): String {
-        val user = UserData.get(creatorId) // Fetch the user by ID
-        return user?.username ?: "Unknown Creator"
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    map.isMyLocationEnabled = true
-                    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                        if (location != null) {
-                            val currentLocation = LatLng(location.latitude, location.longitude)
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
-                        } else {
-                            setDefaultLocation()
-                        }
-                    }
+    private fun showCacheDialog(cache: Cache) {
+        AlertDialog.Builder(this)
+            .setTitle(cache.name ?: "No Title")
+            .setMessage("Description: ${cache.description ?: "No Description"}")
+            .setPositiveButton("Submit Treasure") { _, _ ->
+                if (isWithinRadius(cache)) {
+                    handleCacheInteraction(cache)
+                } else {
+                    Toast.makeText(this, "You are not within the radius!", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                setDefaultLocation()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun handleCacheInteraction(cache: Cache) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_password_prompt, null)
+        val passwordInput = dialogView.findViewById<EditText>(R.id.passwordInput)
+
+        AlertDialog.Builder(this)
+            .setTitle("Enter Password for ${cache.name}")
+            .setView(dialogView)
+            .setPositiveButton("Submit") { _, _ ->
+                val enteredPassword = passwordInput.text.toString()
+                if (enteredPassword == cache.password) {
+                    showRatingDialog(cache)
+                } else {
+                    Toast.makeText(this, "Incorrect password. Try again.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showRatingDialog(cache: Cache) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_rating_prompt, null)
+        val ratingBar = dialogView.findViewById<RatingBar>(R.id.ratingBar)
+
+        AlertDialog.Builder(this)
+            .setTitle("Rate ${cache.name}")
+            .setView(dialogView)
+            .setPositiveButton("Submit") { _, _ ->
+                val rating = ratingBar.rating.toDouble()
+                submitRatingAndUpdateStatus(cache, rating)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun submitRatingAndUpdateStatus(cache: Cache, rating: Double) {
+        val userCache = UserCache(
+            userId = sessionManager.getUserId(),
+            cacheId = cache.id,
+            found = 1,
+            rating = rating,
+            available = 0
+        )
+        UserCacheData.update(userCache)
+
+        refreshMapData()
+
+        Toast.makeText(this, "Thank you for rating ${cache.name}!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun startMapRefresh() {
+        val refreshHandler = android.os.Handler()
+        val refreshRunnable = object : Runnable {
+            override fun run() {
+                refreshMapData()
+                refreshHandler.postDelayed(this, 5000)
             }
         }
+        refreshHandler.post(refreshRunnable)
     }
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    private fun showFilterDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_filter_prompt, null)
+        val difficultyInput = dialogView.findViewById<EditText>(R.id.filterDifficultyInput)
+        val ratingBar = dialogView.findViewById<RatingBar>(R.id.filterRatingBar)
+        val foundCheckbox = dialogView.findViewById<CheckBox>(R.id.filterFoundCheckbox)
+
+        AlertDialog.Builder(this)
+            .setTitle("Filter Caches")
+            .setView(dialogView)
+            .setPositiveButton("Apply") { _, _ ->
+                val difficulty = difficultyInput.text.toString().toDoubleOrNull()
+                val rating = ratingBar.rating.toDouble()
+                val showFound = foundCheckbox.isChecked
+
+                applyFilters(difficulty, rating, showFound)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun applyFilters(difficulty: Double?, rating: Double, showFound: Boolean) {
+        val userCaches = UserCacheData.getAll().filter { it.userId == sessionManager.getUserId() }
+
+        markers.values.forEach { it.isVisible = false }
+        circles.values.forEach { it.isVisible = false }
+
+        userCaches.forEach { userCache ->
+            val cache = CacheData.get(userCache.cacheId)
+            cache?.let {
+                val matchesDifficulty = difficulty == null || it.difficulty == difficulty
+                val matchesRating = it.rating ?: 0.0 >= rating
+                val matchesFound = (userCache.found == 1) == showFound
+
+                if (matchesDifficulty && matchesRating && matchesFound) {
+                    markers[it.id]?.isVisible = true
+                    circles[it.id]?.isVisible = true
+                }
+            }
+        }
     }
 }

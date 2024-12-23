@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/filterTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filter Options"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingBottom="8dp" />
+
+    <EditText
+        android:id="@+id/filterDifficultyInput"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Enter difficulty (e.g., 3.0)"
+        android:padding="10dp" />
+
+    <RatingBar
+        android:id="@+id/filterRatingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:stepSize="1.0"
+        android:padding="8dp" />
+
+    <CheckBox
+        android:id="@+id/filterFoundCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Found Caches"
+        android:padding="8dp" />
+
+    <CheckBox
+        android:id="@+id/filterNotFoundCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Not Found Caches"
+        android:padding="8dp" />
+
+    <Button
+        android:id="@+id/applyFilterButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Apply Filter"
+        android:padding="10dp" />
+</LinearLayout>
