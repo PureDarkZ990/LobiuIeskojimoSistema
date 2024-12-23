@@ -143,6 +143,23 @@
             tools:visibility="gone"
             android:visibility="gone"/>
 
+        <!-- Password Label -->
+        <TextView
+            android:id="@+id/passwordLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Password (Required)"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Password Input -->
+        <EditText
+            android:id="@+id/cachePasswordInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Password"
+            android:inputType="textPassword" />
         <Button
             android:id="@+id/selectImageButton"
             android:layout_width="132dp"

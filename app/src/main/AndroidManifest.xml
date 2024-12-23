@@ -45,6 +45,7 @@
         <activity android:name=".NewGroupActivity"
             android:exported="true">
         </activity>
+
         <activity android:name=".caches.CacheAddActivity"
             android:exported="true" />
         <activity android:name=".caches.ManageCacheActivity"
@@ -52,6 +53,9 @@
         <activity android:name=".caches.ChangeZoneActivity" android:exported="true" />
         <activity android:name=".caches.EditCacheActivity" android:exported="true" />
         <activity android:name=".caches.ManageThemeActivity" android:exported="true" />
+
+        <activity android:name=".FriendshipActivity"
+            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

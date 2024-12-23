@@ -62,7 +62,14 @@
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/ratedComplexity"
         app:layout_constraintStart_toStartOf="parent" />
-
+    <TextView
+        android:id="@+id/themeTiming"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/theme_timing"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/userRating"
+        app:layout_constraintStart_toStartOf="parent" />
     <TextView
         android:id="@+id/approved"
         android:layout_width="wrap_content"
@@ -71,7 +78,7 @@
         android:gravity="center"
         android:textColor="@android:color/holo_green_dark"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/userRating"
+        app:layout_constraintTop_toBottomOf="@id/themeTiming"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button

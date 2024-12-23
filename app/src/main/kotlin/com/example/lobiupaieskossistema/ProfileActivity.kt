@@ -166,6 +166,11 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
 
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
+                R.id.menu_friends -> {
+                    val intent = Intent(this, FriendshipActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
                 R.id.menu_edit_profile -> {
                     showEditProfileDialog()
                     true

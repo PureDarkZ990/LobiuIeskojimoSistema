@@ -7,7 +7,6 @@ import com.example.lobiupaieskossistema.DatabaseHelper
 import com.example.lobiupaieskossistema.models.CacheGroup
 import com.example.lobiupaieskossistema.database.CacheGroupTable
 import com.example.lobiupaieskossistema.models.UserCache
-import com.example.lobiupaieskossistema.models.UserGroup
 
 class CacheGroupDAO(private val context: Context) {
 

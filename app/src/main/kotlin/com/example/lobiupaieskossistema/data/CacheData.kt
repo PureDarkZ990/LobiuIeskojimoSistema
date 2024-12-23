@@ -16,7 +16,7 @@ object CacheData {
         val cacheList = listOf(
             Cache(1, "Cache 1", "Description 1", 54.6872, 25.2797, 100,0, 4.5, 3.0, 1, "2023-01-01", "2023-01-01", 0, 1,null, null),
             Cache(2, "Cache 2", "Description 2", 54.9872, 25.3797, 100, 0, 3.8, 2.0, 0, "2023-01-01", "2023-01-01", 1, 0,null, null),
-            Cache(3, "Cache 3", "Description 3", 54.5872, 25.1797, 100,0, 4.0, 1.0, 1, "2023-01-01", "2023-01-01", 0,1, null, null),
+           Cache(3, "test123", "Dtestukas", 54.89846086828864, 23.957918353352756, 1000,0, 4.0, 1.0, 1, "2023-01-01", "2023-01-01", 0,1, null  , null)
             Cache(4, "Cache 4", "Description 4", 54.6779, 25.2821, 100, 1, 1.1, 1.4, 0, "2024-08-09", "2024-12-15", 0, 44, null, null),
             Cache(5, "Cache 5", "Description 5", 54.7005, 25.2716, 120, 1, 3.0, 4.3, 0, "2024-11-02", "2024-12-23", 0, 11, null, null),
             Cache(6, "Cache 6", "Description 6", 54.6885, 25.2769, 84, 0, 4.2, 2.2, 1, "2024-05-24", "2024-12-04", 0, 34, null, null),
@@ -37,7 +37,6 @@ object CacheData {
             Cache(21, "Cache 21", "Description 21", 54.7072, 25.2893, 120, 1, 1.5, 4.8, 1, "2024-09-07", "2024-12-09", 0, 33, null, null),
             Cache(22, "Cache 22", "Description 22", 54.7021, 25.2614, 118, 1, 2.8, 1.6, 1, "2024-08-03", "2024-11-24", 0, 20, null, null),
             Cache(23, "Cache 23", "Description 23", 54.6789, 25.2830, 128, 0, 4.9, 3.1, 0, "2024-01-13", "2024-11-23", 0, 23, null, null)
-
         )
         cacheList.forEach { cacheDAO.addCache(it) }
     }
@@ -59,6 +58,9 @@ object CacheData {
     }
     fun getAllUserCaches(creatorId:Int): List<Cache> {
         return cacheDAO.getUserCaches(creatorId)
+    }
+    fun getRecommendedCaches(userId: Int, currentLatitude: Double, currentLongitude: Double): List<Cache> {
+        return cacheDAO.getRecommendedCaches(userId, currentLatitude, currentLongitude)
     }
     fun getAll(): List<Cache> {
         return cacheDAO.getAllCaches()
