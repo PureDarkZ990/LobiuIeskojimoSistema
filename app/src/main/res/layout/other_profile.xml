@@ -1,0 +1,61 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/otherProfileImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/default_profile_image"
+        android:layout_gravity="center"
+        android:contentDescription="Profile Image" />
+
+    <TextView
+        android:id="@+id/otherUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_gravity="center"
+        android:marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/otherBio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bio"
+        android:layout_gravity="center"
+        android:marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/otherFoundCaches"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Found Caches: 0"
+        android:layout_gravity="center"
+        android:marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/otherEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:layout_gravity="center"
+        android:marginTop="8dp" />
+
+    <!-- Delete Account Button -->
+    <Button
+        android:id="@+id/deleteAccountButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete Account"
+        android:background="@color/red"
+        android:textColor="@android:color/white"
+        android:visibility="gone"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

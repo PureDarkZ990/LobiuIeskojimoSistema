@@ -2,14 +2,17 @@ package com.example.lobiupaieskossistema
 
 import android.app.Dialog
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.provider.MediaStore
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -17,8 +20,12 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
+import android.widget.Toast
+import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.lobiupaieskossistema.database.CacheTable
+import com.example.lobiupaieskossistema.database.UserTable
 import com.example.lobiupaieskossistema.utils.SessionManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -42,11 +49,13 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.hide()
-        setContentView(R.layout.profile)
 
         sessionManager = SessionManager(this)
         databaseHelper = DatabaseHelper(this)
+
+        applyDarkModePreference()
+        setContentView(R.layout.profile)
+        supportActionBar?.hide()
 
         if (!sessionManager.isLoggedIn()) {
             val intent = Intent(this, LogInActivity::class.java)
@@ -64,6 +73,31 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
         loadUserProfile()
     }
 
+    private fun applyDarkModePreference() {
+        val userId = sessionManager.getUserId()
+        val db = databaseHelper.readableDatabase
+
+        val cursor = db.query(
+            "users",
+            arrayOf("dark_mode"),
+            "id = ?",
+            arrayOf(userId.toString()),
+            null,
+            null,
+            null
+        )
+
+        if (cursor.moveToFirst()) {
+            val darkModeEnabled = cursor.getInt(cursor.getColumnIndexOrThrow("dark_mode")) == 1
+            if (darkModeEnabled) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
+        cursor.close()
+    }
+
     private fun openImagePickerForDialog(imageView: ImageView) {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, REQUEST_IMAGE_PICK)
@@ -77,6 +111,8 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
             if (imageUri != null) {
                 selectedImageUri = imageUri
                 saveImageToInternalStorage(imageUri)
+
+                currentDialogImageView?.setImageURI(imageUri)
             }
         }
     }
@@ -125,6 +161,7 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
         val userId = sessionManager.getUserId()
         val db = databaseHelper.readableDatabase
 
+        // Query to get user details
         val cursor = db.query(
             "users",
             arrayOf("username", "bio", "last_login", "email"),
@@ -141,10 +178,25 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
             val lastLogin = cursor.getString(cursor.getColumnIndexOrThrow("last_login"))
             val email = cursor.getString(cursor.getColumnIndexOrThrow("email"))
 
+            // Query to count the number of found caches for the user
+            val foundCursor = db.rawQuery(
+                "SELECT COUNT(*) FROM user_caches WHERE user_id = ? AND found = 1",
+                arrayOf(userId.toString())
+            )
+
+            val amountFound = if (foundCursor.moveToFirst()) {
+                foundCursor.getInt(0) // Get the count from the first column
+            } else {
+                0
+            }
+            foundCursor.close()
+
+            // Update the UI
             findViewById<TextView>(R.id.userName).text = username
             findViewById<TextView>(R.id.bio).text = bio
-            findViewById<TextView>(R.id.textView1).text = lastLogin
-            findViewById<TextView>(R.id.textView2).text = email
+            findViewById<TextView>(R.id.textView3).text = "Last seen: $lastLogin"
+            findViewById<TextView>(R.id.textView2).text = "Email: $email"
+            findViewById<TextView>(R.id.textView1).text = "Found: $amountFound"
 
             val imagePath = File(filesDir, "profile-images/$userId.png")
             if (imagePath.exists()) {
@@ -157,7 +209,6 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
 
         cursor.close()
         db.close()
-        val mapView = findViewById<MapView>(R.id.mapView)
     }
 
     private fun showPopupMenu(view: View) {
@@ -185,6 +236,10 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
                     showSettingsDialog()
                     true
                 }
+                R.id.menu_test_notification -> {
+                    testNotification()
+                    true
+                }
                 R.id.menu_logout -> {
                     sessionManager.logout()
                     val intent = Intent(this, LogInActivity::class.java)
@@ -198,22 +253,153 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
         popupMenu.show()
     }
 
+    private fun testNotification() {
+        val notificationMessage = "This is a test notification message."
+        val notificationDate = "2024-12-23"
+
+        val db = databaseHelper.writableDatabase
+
+        // Insert notification into the notifications table
+        val notificationValues = ContentValues().apply {
+            put("message", notificationMessage)
+            put("date", notificationDate)
+        }
+        val notificationId = db.insert("notifications", null, notificationValues)
+
+        // Link the notification to the current user in the notification_users table
+        val userId = sessionManager.getUserId()
+        val userNotificationValues = ContentValues().apply {
+            put("notification_id", notificationId.toInt())
+            put("user_id", userId)
+            put("read", 0) // Unread
+        }
+        db.insert("notification_users", null, userNotificationValues)
+
+        // Fetch user preferences for sound and vibration
+        val cursor = db.query(
+            UserTable.TABLE_NAME,
+            arrayOf(UserTable.SOUND_ENABLED, UserTable.VIBRATION_ENABLED),
+            "${UserTable.ID} = ?",
+            arrayOf(userId.toString()),
+            null,
+            null,
+            null
+        )
+
+        var soundEnabled = false
+        var vibrationEnabled = false
+        if (cursor.moveToFirst()) {
+            soundEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.SOUND_ENABLED)) == 1
+            vibrationEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(UserTable.VIBRATION_ENABLED)) == 1
+        }
+        cursor.close()
+        db.close()
+
+        // Play sound and vibrate if enabled
+        if (soundEnabled) {
+            playSound()
+        }
+        if (vibrationEnabled) {
+            triggerVibration()
+        }
+
+        // Display the notification dialog
+        val dialog = Dialog(this)
+        val dialogView = layoutInflater.inflate(R.layout.notification, null)
+        dialog.setContentView(dialogView)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val messageView = dialogView.findViewById<TextView>(R.id.notificationMessage)
+        val okButton = dialogView.findViewById<Button>(R.id.okButton)
+
+        messageView.text = notificationMessage
+        okButton.setOnClickListener { dialog.dismiss() }
+
+        dialog.show()
+    }
+
+
+
+
+    private fun playSound() {
+        val mediaPlayer = MediaPlayer.create(this, R.raw.notification_sound)
+        mediaPlayer.setOnCompletionListener { it.release() }
+        mediaPlayer.start()
+    }
+    private fun triggerVibration() {
+        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (vibrator.hasVibrator()) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                vibrator.vibrate(500) // Fallback for older versions
+            }
+        }
+    }
+
+
+
     private fun showSettingsDialog() {
         val dialogView = layoutInflater.inflate(R.layout.settings_change, null)
         val dialog = Dialog(this)
         dialog.setContentView(dialogView)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
+        val darkModeCheckbox = dialogView.findViewById<CheckBox>(R.id.darkModeCheckbox)
+        val vibrationCheckbox = dialogView.findViewById<CheckBox>(R.id.vibrationCheckbox)
+        val soundCheckbox = dialogView.findViewById<CheckBox>(R.id.soundCheckbox)
+        val userId = sessionManager.getUserId()
+        val db = databaseHelper.readableDatabase
+
+        // Load current dark mode setting
+        val cursor = db.query(
+            "users",
+            arrayOf("dark_mode","sound_enabled", "vibration_enabled"),
+            "id = ?",
+            arrayOf(userId.toString()),
+            null,
+            null,
+            null
+        )
+
+        if (cursor.moveToFirst()) {
+            darkModeCheckbox.isChecked = cursor.getInt(cursor.getColumnIndexOrThrow("dark_mode")) == 1
+            vibrationCheckbox.isChecked = cursor.getInt(cursor.getColumnIndexOrThrow("sound_enabled")) == 1
+            soundCheckbox.isChecked = cursor.getInt(cursor.getColumnIndexOrThrow("vibration_enabled")) == 1
+        }
+        cursor.close()
+
+        dialog.findViewById<Button>(R.id.cancelButton).setOnClickListener {
+            val isDarkModeEnabled = darkModeCheckbox.isChecked
+            val isVibrationEnabled = vibrationCheckbox.isChecked
+            val isSoundEnabled = soundCheckbox.isChecked
+
+            val values = ContentValues().apply {
+                put("dark_mode", if (isDarkModeEnabled) 1 else 0)
+                put("sound_enabled", if (isSoundEnabled) 1 else 0)
+                put("vibration_enabled", if (isVibrationEnabled) 1 else 0)
+            }
+
+            db.update("users", values, "id = ?", arrayOf(userId.toString()))
+            Toast.makeText(this, "Settings updated successfully", Toast.LENGTH_SHORT).show()
+
+            if (isDarkModeEnabled) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+
+            dialog.dismiss()
+        }
+
         dialog.findViewById<Button>(R.id.deleteAccountButton).setOnClickListener {
             showDeleteAccountConfirmationDialog(dialog)
         }
 
-        dialog.findViewById<Button>(R.id.cancelButton).setOnClickListener {
-            dialog.dismiss()
-        }
-
         dialog.show()
     }
+
+
 
     private fun showDeleteAccountConfirmationDialog(settingsDialog: Dialog) {
         val confirmationDialog = Dialog(this)
@@ -265,12 +451,22 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
         usernameField.setText(findViewById<TextView>(R.id.userName).text.toString())
         bioField.setText(findViewById<TextView>(R.id.bio).text.toString())
 
+        // Load the current profile image into the dialog's ImageView
+        val userId = sessionManager.getUserId()
+        val imagePath = File(filesDir, "profile-images/$userId.png")
+        if (imagePath.exists()) {
+            val bitmap = BitmapFactory.decodeFile(imagePath.absolutePath)
+            dialogProfileImageView.setImageBitmap(bitmap)
+        } else {
+            dialogProfileImageView.setImageResource(R.drawable.default_profile_image)
+        }
+
+        // Handle image upload
         uploadImageButton.setOnClickListener {
             openImagePickerForDialog(dialogProfileImageView)
         }
 
         saveButton.setOnClickListener {
-            val userId = sessionManager.getUserId()
             val newUsername = usernameField.text.toString()
             val newBio = bioField.text.toString()
 
@@ -278,11 +474,19 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
 
             findViewById<TextView>(R.id.userName).text = newUsername
             findViewById<TextView>(R.id.bio).text = newBio
+
+            // Update the main profile image after saving changes
+            if (imagePath.exists()) {
+                val updatedBitmap = BitmapFactory.decodeFile(imagePath.absolutePath)
+                profileImageView.setImageBitmap(updatedBitmap)
+            }
+
             dialog.dismiss()
         }
 
         dialog.show()
     }
+
 
     private fun updateUserProfile(userId: Int, username: String, bio: String) {
         val db = databaseHelper.writableDatabase
@@ -307,13 +511,48 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
         googleMap.uiSettings.isZoomControlsEnabled = true
         googleMap.uiSettings.isMyLocationButtonEnabled = true
 
-        val defaultLocation = LatLng(54.6872, 25.2797)
+        val defaultLocation = LatLng(54.8985, 23.9036)
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10f))
     }
+    /*
+        private fun loadHeatmap() {
+            val db = databaseHelper.readableDatabase
+            val cursor = db.rawQuery("SELECT xcoordinate, ycoordinate, difficulty FROM ${CacheTable.TABLE_NAME}", null)
+            val weightedLocations = mutableListOf<com.google.maps.android.heatmaps.WeightedLatLng>()
+
+            while (cursor.moveToNext()) {
+                val latitude = cursor.getDouble(cursor.getColumnIndexOrThrow("xcoordinate"))
+                val longitude = cursor.getDouble(cursor.getColumnIndexOrThrow("ycoordinate"))
+                val difficulty = cursor.getDouble(cursor.getColumnIndexOrThrow("difficulty"))
+
+                val weight = calculateWeight(difficulty)
+                weightedLocations.add(com.google.maps.android.heatmaps.WeightedLatLng(LatLng(latitude, longitude), weight))
+            }
+            cursor.close()
+
+            val heatmapProvider = HeatmapTileProvider.Builder()
+                .weightedData(weightedLocations)
+                .build()
+
+            googleMap.addTileOverlay(TileOverlayOptions().tileProvider(heatmapProvider))
+        }*/
+
 
     private fun loadHeatmap() {
+        val userId = sessionManager.getUserId()
         val db = databaseHelper.readableDatabase
-        val cursor = db.rawQuery("SELECT xcoordinate, ycoordinate, difficulty FROM ${CacheTable.TABLE_NAME}", null)
+
+        // Query to fetch only the caches found by the user
+        val cursor = db.rawQuery(
+            """
+    SELECT c.xcoordinate, c.ycoordinate, c.difficulty
+    FROM ${CacheTable.TABLE_NAME} AS c
+    INNER JOIN user_caches AS uc ON c.id = uc.cache_id
+    WHERE uc.user_id = ? AND uc.found = 1
+    """,
+            arrayOf(userId.toString())
+        )
+
         val weightedLocations = mutableListOf<com.google.maps.android.heatmaps.WeightedLatLng>()
 
         while (cursor.moveToNext()) {
@@ -321,13 +560,22 @@ class ProfileActivity : AppCompatActivity(), OnMapReadyCallback {
             val longitude = cursor.getDouble(cursor.getColumnIndexOrThrow("ycoordinate"))
             val difficulty = cursor.getDouble(cursor.getColumnIndexOrThrow("difficulty"))
 
+            // Calculate weight based on difficulty
             val weight = calculateWeight(difficulty)
             weightedLocations.add(com.google.maps.android.heatmaps.WeightedLatLng(LatLng(latitude, longitude), weight))
         }
         cursor.close()
 
+        // Handle case where there are no found treasures
+        if (weightedLocations.isEmpty()) {
+            // Display a message and return without adding a heatmap
+            Toast.makeText(this, "No found treasures to display on the heatmap.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Create and add the heatmap to the map
         val heatmapProvider = HeatmapTileProvider.Builder()
-            .weightedData(weightedLocations)
+            .weightedData(weightedLocations) // Pass filtered and weighted locations
             .build()
 
         googleMap.addTileOverlay(TileOverlayOptions().tileProvider(heatmapProvider))

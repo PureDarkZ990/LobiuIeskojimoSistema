@@ -79,4 +79,8 @@
     <string name="enter_time">Enter Time</string>
     <string name="theme_timing">Theme Timing</string>
     <string name="repeat_password">Repeat Password</string>
+    <string name="save_changes">save</string>
+    <string name="notifications">Notifications</string>
+    <string name="preferences">Preferences</string>
+    <string name="notification_icon">Important</string>
 </resources>

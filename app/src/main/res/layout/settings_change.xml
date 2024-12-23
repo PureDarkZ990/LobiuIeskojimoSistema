@@ -1,63 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="@android:color/white"
-    android:elevation="8dp"
-    android:layout_gravity="center">
+    android:background="?android:windowBackground">
 
-    <CheckBox
-        android:id="@+id/darkModeCheckbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/dark_mode"
-        android:layout_marginBottom="10dp" />
-
-    <CheckBox
-        android:id="@+id/privacySettingCheckbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/private_profile"
-        android:layout_marginBottom="10dp" />
-
-    <CheckBox
-        android:id="@+id/shareLocationCheckbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/share_location"
-        android:layout_marginBottom="10dp" />
-
-    <CheckBox
-        android:id="@+id/vibrationCheckbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/vibration_for_notifications"
-        android:layout_marginBottom="10dp" />
-
-    <CheckBox
-        android:id="@+id/soundCheckbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sound"
-        android:layout_marginBottom="10dp" />
-
-    <Button
-        android:id="@+id/deleteAccountButton"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/delete_account"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@android:color/holo_red_light"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp" />
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/cancelButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/ok"
-        android:layout_marginTop="10dp" />
+        <!-- Section Header -->
+        <TextView
+            android:id="@+id/preferencesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/preferences"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginBottom="12dp"
+            android:paddingHorizontal="4dp" />
 
-</LinearLayout>
+        <!-- Dark Mode -->
+        <CheckBox
+            android:id="@+id/darkModeCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dark_mode"
+            android:layout_marginBottom="10dp"
+            android:contentDescription="@string/dark_mode" />
+
+        <!-- Privacy -->
+        <CheckBox
+            android:id="@+id/privacySettingCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/private_profile"
+            android:layout_marginBottom="10dp"
+            android:contentDescription="@string/private_profile" />
+
+        <!-- Share Location -->
+        <CheckBox
+            android:id="@+id/shareLocationCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/share_location"
+            android:layout_marginBottom="10dp"
+            android:contentDescription="@string/share_location" />
+
+        <!-- Notifications -->
+        <TextView
+            android:id="@+id/notificationsHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/notifications"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:paddingHorizontal="4dp" />
+
+        <CheckBox
+            android:id="@+id/vibrationCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/vibration_for_notifications"
+            android:layout_marginBottom="10dp"
+            android:contentDescription="@string/vibration_for_notifications" />
+
+        <CheckBox
+            android:id="@+id/soundCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sound"
+            android:layout_marginBottom="10dp"
+            android:contentDescription="@string/sound" />
+
+        <!-- Action Buttons -->
+        <Button
+            android:id="@+id/deleteAccountButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/delete_account"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/holo_red_light"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:contentDescription="@string/delete_account" />
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ok"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/save_changes" />
+    </LinearLayout>
+</ScrollView>
