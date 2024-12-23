@@ -43,7 +43,7 @@ class ManageCacheActivity : AppCompatActivity() {
         }
         cacheRecyclerView = findViewById(R.id.cacheListRecyclerView)
         cacheRecyclerView.layoutManager = LinearLayoutManager(this)
-        cacheAdapter = CacheAdapter(cacheList, this, userRoleId)
+        cacheAdapter = CacheAdapter(cacheList, this, userRoleId, sessionManager.getUserId())
         cacheRecyclerView.adapter = cacheAdapter
     }
 }

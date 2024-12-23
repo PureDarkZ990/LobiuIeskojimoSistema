@@ -59,6 +59,9 @@ class LogInActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Update last login time
+            userDAO.updateLastLogin(user.id)
+
             user.roleId?.let { roleId ->
                 sessionManager.createLoginSession(user.username, user.id, roleId)
             }
@@ -70,5 +73,6 @@ class LogInActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
     }
 }

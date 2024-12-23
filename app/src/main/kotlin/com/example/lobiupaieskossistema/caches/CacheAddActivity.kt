@@ -1,6 +1,7 @@
 package com.example.lobiupaieskossistema.caches
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -59,6 +60,7 @@ class CacheAddActivity : AppCompatActivity() {
     private lateinit var categoryDescriptionLabel: TextView
     private lateinit var categoryDescriptionInput: EditText
     private lateinit var privateCacheCheckbox: CheckBox
+    private lateinit var passwordInput: EditText
     private lateinit var assignGroupButton: Button
     private lateinit var assignPersonButton: Button
     private lateinit var submitCacheButton: Button
@@ -71,6 +73,7 @@ class CacheAddActivity : AppCompatActivity() {
     private var currentLongitude: Double = 0.0
     private lateinit var sessionManager: SessionManager
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
@@ -113,6 +116,8 @@ class CacheAddActivity : AppCompatActivity() {
         submitCacheButton = findViewById(R.id.submitCacheButton)
         userListView = findViewById(R.id.userListView)
         groupListView = findViewById(R.id.groupListView)
+        passwordInput = findViewById(R.id.cachePasswordInput)
+
 
         val users = UserData.getAll().filter { sessionManager.getUserId()!=it.id&&!UserData.isAdministrator(it.id) }
         val groups = GroupData.getAll()
@@ -228,7 +233,11 @@ class CacheAddActivity : AppCompatActivity() {
             val description = cacheDescriptionInput.text.toString()
             val zoneRadius = zoneRadiusSeekBar.progress + 5
             val difficulty = difficultySeekBar.progress.toString().toDoubleOrNull() ?: 0.0
-
+            val password = passwordInput.text.toString()
+            if (password.isEmpty()) {
+                Toast.makeText(this, "Password cannot be empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val selectedUsers = userListView.checkedItemPositions
                 .let { positions -> users.filterIndexed { index, _ -> positions[index] } }
 
@@ -245,6 +254,7 @@ class CacheAddActivity : AppCompatActivity() {
                 yCoordinate = currentLongitude,
                 zoneRadius = zoneRadius,
                 difficulty = difficulty / 100,
+                password = password, // Include the password field
                 createdAt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
                 updatedAt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
                 private = if (privateCacheCheckbox.isChecked) 1 else 0,

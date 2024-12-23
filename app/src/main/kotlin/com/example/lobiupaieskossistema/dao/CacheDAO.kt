@@ -7,6 +7,8 @@ import com.example.lobiupaieskossistema.DatabaseHelper
 import com.example.lobiupaieskossistema.database.CacheTable
 import com.example.lobiupaieskossistema.models.Cache
 import com.example.lobiupaieskossistema.models.UserCache
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 class CacheDAO(private val context: Context) {
 
@@ -29,6 +31,7 @@ class CacheDAO(private val context: Context) {
             put(CacheTable.PRIVATE, cache.private)
             put(CacheTable.THEME_ID, cache.themeId)
             put(CacheTable.CREATOR_ID, cache.creatorId)
+            put(CacheTable.PASSWORD, cache.password)
         }
         val id= db.insert(CacheTable.TABLE_NAME, null, values)
         if(id!=-1L) {
@@ -99,7 +102,8 @@ class CacheDAO(private val context: Context) {
                     updatedAt = getString(getColumnIndexOrThrow(CacheTable.UPDATED_AT)),
                     private = getInt(getColumnIndexOrThrow(CacheTable.PRIVATE)),
                     themeId = getInt(getColumnIndexOrThrow(CacheTable.THEME_ID)),
-                    creatorId = getInt(getColumnIndexOrThrow(CacheTable.CREATOR_ID))
+                    creatorId = getInt(getColumnIndexOrThrow(CacheTable.CREATOR_ID)),
+                    password = getString(getColumnIndexOrThrow(CacheTable.PASSWORD))
                 )
                 caches.add(cache)
             }
@@ -133,7 +137,8 @@ class CacheDAO(private val context: Context) {
                 updatedAt = cursor.getString(cursor.getColumnIndexOrThrow(CacheTable.UPDATED_AT)),
                 private = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.PRIVATE)),
                 themeId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.THEME_ID)),
-                creatorId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.CREATOR_ID))
+                creatorId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.CREATOR_ID)),
+                password = cursor.getString(cursor.getColumnIndexOrThrow(CacheTable.PASSWORD)),
             )
         }
         cursor.close()
@@ -157,6 +162,7 @@ class CacheDAO(private val context: Context) {
             put(CacheTable.PRIVATE, cache.private)
             put(CacheTable.THEME_ID, cache.themeId)
             put(CacheTable.CREATOR_ID, cache.creatorId)
+            put(CacheTable.PASSWORD, cache.password)
         }
         return db.update(CacheTable.TABLE_NAME, values, "${CacheTable.ID} = ?", arrayOf(cache.id.toString()))
     }
@@ -193,7 +199,8 @@ class CacheDAO(private val context: Context) {
                     updatedAt = cursor.getString(cursor.getColumnIndexOrThrow(CacheTable.UPDATED_AT)),
                     private = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.PRIVATE)),
                     themeId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.THEME_ID)),
-                    creatorId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.CREATOR_ID))
+                    creatorId = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.CREATOR_ID)),
+                    password = cursor.getInt(cursor.getColumnIndexOrThrow(CacheTable.PASSWORD)).toString()
                 )
                 caches.add(cache)
             }
@@ -201,5 +208,55 @@ class CacheDAO(private val context: Context) {
         cursor.close()
         return caches
 
+    }
+
+    fun getRecommendedCaches(userId: Int, currentLatitude: Double, currentLongitude: Double): List<Cache> {
+
+        // Calculate weights for each cache
+        val userCacheDAO = UserCacheDAO(context)
+        val userCaches=userCacheDAO.getAllUserCaches()
+        val caches = getAllCaches().filter {
+                it.creatorId!=userId
+                userCaches.find { cache ->  cache.cacheId == it.id&&
+                                            cache.userId==userId }?.
+                                            available==1
+
+        }
+        val foundCaches = userCaches.filter {
+            it.found == 1&&
+            it.userId==userId&&
+            userId!=findCacheById(it.cacheId)?.creatorId
+        }
+        val averageDifficulty = foundCaches.map { it.rating ?: 0.0 }.average()
+        val commonCategories = foundCaches.groupBy { it.cacheId }.mapValues { it.value.size }
+
+        val userFoundCaches = foundCaches.filter { it.userId == userId }
+        val themedCachesCount = userFoundCaches.count { cache -> caches.find { it.id == cache.cacheId }?.themeId != null }
+        val nonThemedCachesCount = userFoundCaches.size - themedCachesCount
+        val prefersThemed = themedCachesCount > nonThemedCachesCount
+
+        val weightedCaches = caches.map { cache ->
+            val distance = sqrt(
+                (cache.xCoordinate - currentLatitude) * (cache.xCoordinate - currentLatitude) +
+                        (cache.yCoordinate - currentLongitude) * (cache.yCoordinate - currentLongitude)
+            )
+            val distanceWeight = if (distance <= 10) 1.0 else 1.0 / distance
+
+            val difficultyWeight = 1.0 / (1.0 + abs((cache.difficulty ?: 0.0) - averageDifficulty))
+
+            val categoryWeight = (commonCategories[cache.id] ?: 0) / foundCaches.size.toDouble()
+
+            val themeWeight = if (prefersThemed) {
+                if (cache.themeId != null) 1.0 else 0.5
+            } else {
+                if (cache.themeId == null) 1.0 else 0.5
+            }
+
+            val totalWeight = distanceWeight + difficultyWeight + categoryWeight + themeWeight
+
+            cache to totalWeight
+        }
+
+        return weightedCaches.sortedByDescending { it.second }.map { it.first }
     }
 }
