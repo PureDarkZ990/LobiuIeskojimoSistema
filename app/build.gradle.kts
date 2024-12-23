@@ -48,5 +48,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     //noinspection GradleDependency
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.maps.android:android-maps-utils:3.4.0")
 
 }
