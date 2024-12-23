@@ -266,4 +266,18 @@ class UserDAO(private val context: Context) {
     fun isAdministrator(id: Int): Boolean {
         return getAllAdmins().find { it.id == id }?.roleId == getAdminId()
     }
+    fun updateLastLogin(userId: Int) {
+        val db = dbHelper.writableDatabase
+        val contentValues = ContentValues().apply {
+            put("last_login", getCurrentDateTime()) // Save current time as a timestamp
+        }
+        db.update("users", contentValues, "id = ?", arrayOf(userId.toString()))
+        db.close()
+    }
+    private fun getCurrentDateTime(): String {
+        val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+        return dateFormat.format(java.util.Date())
+    }
+
+
 }
